@@ -44,8 +44,10 @@ public class App extends PApplet {
     private Topbar topbar;
     private Sidebar sidebar;
 
-    public static ArrayList<ArrayList<MyPoint>> shortest_Paths = new ArrayList<>();
-    private ArrayList<MyPoint> startPoints = new ArrayList<>();
+    public static HashMap<MyPoint, ArrayList<MyPoint>> shortest_Paths = new HashMap<>();
+
+    // public static ArrayList<ArrayList<MyPoint>> shortest_Paths = new ArrayList<>();
+    public static ArrayList<MyPoint> startPoints = new ArrayList<>();
 
     // Feel free to add any additional methods or attributes you want. Please put
     // classes in different files.
@@ -104,7 +106,6 @@ public class App extends PApplet {
         try {
             up = backGroundArray[upX][y];
         } catch (ArrayIndexOutOfBoundsException e) {
-            // 上下左右颠倒了，不知道啥原因
             System.out.println("上边界出界: " + upX + " " + y);
             startPoints.add(new MyPoint(upX + 1, y));
             up = 'X';
@@ -113,7 +114,7 @@ public class App extends PApplet {
             down = backGroundArray[downX][y];
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("下边界出界： " + downX + " " + y);
-            startPoints.add(new MyPoint(downX + 1, y));
+            startPoints.add(new MyPoint(downX, y));
             down = 'X';
 
         }
@@ -127,8 +128,8 @@ public class App extends PApplet {
         try {
             right = backGroundArray[x][rightY];
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("右边界出界： " + x + " " + leftY);
-            startPoints.add(new MyPoint(x, rightY + 1));
+            System.out.println("右边界出界： " + x + " " + rightY);
+            startPoints.add(new MyPoint(x, rightY));
             right = 'X';
         }
 
@@ -463,7 +464,7 @@ public class App extends PApplet {
         MyPoint end = new MyPoint(wizard_house_x, wizard_house_y);
         for (int x = 0; x < startPoints.size(); x++) {
             MyPoint start = startPoints.get(x);
-            shortest_Paths.add(BreadthFirstSearch(start, end));
+            shortest_Paths.put(start,BreadthFirstSearch(start, end));
 
             // 如果是左右出生，需要加TOPBAR+上下6
             // 如果上下出生，只需要左右+6
@@ -472,9 +473,10 @@ public class App extends PApplet {
             System.out.println("Monster adds at: " + (start.getY() * CELLSIZE) + " " + (start.getX() * CELLSIZE));
         }
 
-        for (ArrayList<MyPoint> one_Path : shortest_Paths) {
-            System.out.println("shortestPath: " + one_Path.toString());
+        for(int x=0; x<startPoints.size(); x++){
+            System.out.println("shortestPath: " + shortest_Paths.get(startPoints.get(x)).toString());
         }
+        
 
         System.out.println("startPoints: " + startPoints.toString());
 
@@ -684,7 +686,7 @@ public class App extends PApplet {
      * Draw all elements in the game by current frame.
      * draw() will be called once every second.
      */
-
+    public static MyPoint spawn_point;
     @Override
     public void draw() {
         background(background_R, background_G, background_B);
@@ -709,14 +711,15 @@ public class App extends PApplet {
         this.Monster_timer--;
 
         // 生成Monster List
-        MyPoint startP = startPoints.get(random.nextInt(startPoints.size()));
+        spawn_point = startPoints.get(random.nextInt(startPoints.size()));
         int position_adjust = (CELLSIZE - gremlin_image.width) / 2; // 这里是6
-        // TODO 出生时间和数量还是有问题,目前开始是从0出生的，还不是地图外
+        // TODO 目前开始是从0出生的，还不是地图外
         // for (int x = 0; x < monster_info_map.size(); x++) {
+            // 这里这个map是控制wave里monsters里面的信息的
             double speed = (double) (monster_info_map.get(0).get(2));
             if (this.Monster_timer < 0 && monster_count != 0) {
-                monsterList.add(new Gremlin(startP.getY() * CELLSIZE + position_adjust,
-                        startP.getX() * CELLSIZE + TOPBAR + position_adjust, speed, true, false, this.gremlin_image));
+                monsterList.add(new Gremlin(spawn_point.getY() * CELLSIZE + position_adjust,
+                        spawn_point.getX() * CELLSIZE + TOPBAR + position_adjust, speed, true, false, this.gremlin_image));
                 monster_count--;
 
                 this.Monster_timer = (wave_duration / monster_quantity) * FPS;

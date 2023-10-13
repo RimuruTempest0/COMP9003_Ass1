@@ -1,4 +1,7 @@
 package WizardTD;
+
+import java.util.HashMap;
+
 import processing.core.PImage;
 
 public class Gremlin extends Monster {
@@ -6,10 +9,12 @@ public class Gremlin extends Monster {
     public boolean animation_start;
     public int current_frame = 0;
     public int number_frames = 5;
+    MyPoint spawn_p;
 
     public Gremlin(int monster_x, int monster_y, double speed, boolean isAlive, boolean animation_start, PImage sprite) {
         super(monster_x, monster_y, speed, isAlive, sprite);
         this.animation_start = animation_start;
+        spawn_p = new MyPoint(((monster_y-6-TOPBAR)/CELLSIZE),(monster_x-6)/CELLSIZE);
     }
 
     
@@ -35,9 +40,9 @@ public class Gremlin extends Monster {
     }
     
     MyPoint next_point = new MyPoint();
-    int shortest_index = 1;
+    // 每个Monster存储对应的路线迭代index
+    HashMap<MyPoint, Integer> indexMap = new HashMap<>();
     public void tick() {
-        // System.out.println(wizard_house_x +" " + wizard_house_y); (8, 9)
         // TODO 这里写死亡状态检测
         if (this.monster_x == wizard_house_y*CELLSIZE + 6 && this.monster_y == wizard_house_x*CELLSIZE+TOPBAR+6) {
             this.isAlive = false;
@@ -45,17 +50,22 @@ public class Gremlin extends Monster {
         } else {
             // 判断上下左右走，用当前Point.get(x,y)于下一个Point.get(x,y)判断
             // 判断下一个Point的x还是y相等，然后判断x y的大小
+            for(int x=0; x<startPoints.size(); x++){
+                MyPoint spawn = startPoints.get(x);
+                if(!indexMap.containsKey(spawn)){
+                    indexMap.put(spawn, 1);
+                }
+            }
+            int shortest_index = indexMap.get(spawn_p);
+            next_point = shortest_Paths.get(spawn_p).get(shortest_index);
             
-            // System.out.println(current_point.getX()+" "+current_point.getY());
-            next_point = shortest_Paths.get(0).get(shortest_index);
-
-
             // Move Right
             if(this.monster_x < next_point.getY()*CELLSIZE + 6)
             {
                 this.monster_x += monster_speed;
                 if(this.monster_x == next_point.getY()*CELLSIZE + 6){
                     shortest_index++;
+                    indexMap.put(spawn_p, shortest_index);
                 }
             }
 
@@ -65,6 +75,7 @@ public class Gremlin extends Monster {
                 this.monster_x -= monster_speed;
                 if(this.monster_x == next_point.getY()*CELLSIZE + 6){
                     shortest_index++;
+                    indexMap.put(spawn_p, shortest_index);
                 }
             }
 
@@ -75,6 +86,7 @@ public class Gremlin extends Monster {
                 this.monster_y += monster_speed;
                 if(this.monster_y == next_point.getX()*CELLSIZE+ TOPBAR+6){
                     shortest_index++;
+                    indexMap.put(spawn_p, shortest_index);
                 }
             }
 
@@ -84,10 +96,9 @@ public class Gremlin extends Monster {
                 this.monster_y -= monster_speed;
                 if(this.monster_y == next_point.getX()*CELLSIZE+ TOPBAR+6){
                     shortest_index++;
+                    indexMap.put(spawn_p, shortest_index);
                 }
             }
-
-
         }
     }
 
