@@ -10,12 +10,13 @@ public class Sidebar extends App {
     private int sideBar_button_y = 50;
     
     
-    private Button buildTowerButton = new Button("T", "Build\nTower", sideBar_button_x, sideBar_button_y + 100);
+    
     private Button upgradeRangeButton = new Button("U1", "Upgrade\nRange", sideBar_button_x, sideBar_button_y + 150);
     private Button upgradeSpeedButton = new Button("U2", "Upgrade\nSpeed", sideBar_button_x, sideBar_button_y + 200);
     private Button upgradeDamageButton = new Button("U3", "Upgrade\nDamage", sideBar_button_x, sideBar_button_y + 250);
     private Button manaPoolButton = new Button("M", "Mana Pool\nCost: ", sideBar_button_x, sideBar_button_y + 300);
 
+    
     public void draw(App app) {
         // 先画一个大的矩形，要盖住右侧出生的小兵, Right bar
         int sideBar_Cover_Height = CELLSIZE * BOARD_WIDTH;
@@ -47,6 +48,10 @@ public class Sidebar extends App {
             pauseButton.drawYellow(app);
             
         }
+
+        
+
+        
 
         if (current_mana_value > 208) {
             buildTowerButton.drawYellow(app);

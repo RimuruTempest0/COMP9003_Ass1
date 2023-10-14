@@ -59,11 +59,13 @@ public class Button extends App {
         if (mouse_on_button(app)) {
             app.fill(200, 200, 200);
             app.stroke(0);
+            app.strokeWeight(1);
             app.rect(button_x, button_y, button_width, button_hight);
 
         } else {
             app.fill(background_R, background_G, background_B);
             app.stroke(0);
+            app.strokeWeight(1);
             app.rect(button_x, button_y, button_width, button_hight);
         }
     }
@@ -72,6 +74,7 @@ public class Button extends App {
 
         app.fill(240, 220, 10);
         app.stroke(0);
+        app.strokeWeight(1);
         app.rect(button_x, button_y, button_width, button_hight);
         drawText(app);
 

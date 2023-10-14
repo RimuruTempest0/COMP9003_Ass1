@@ -41,6 +41,7 @@ public class Topbar extends App {
         app.fill(0);
         app.text("MANA: ", mana_X, text_y);
         app.stroke(0);
+        app.strokeWeight(1);
         app.fill(255);
         app.rect(mana_box_x, mana_box_y, mana_width, mana_height);
 

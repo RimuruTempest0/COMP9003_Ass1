@@ -33,7 +33,7 @@ public class App extends PApplet {
     public Random random = new Random();
 
     public PImage[][] mapTile = new PImage[20][20];;
-    private char[][] Map_Grid;
+    public static char[][] Map_Grid;
 
     private static int wizard_house_display_x;
     private static int wizard_house_display_y;
@@ -46,7 +46,8 @@ public class App extends PApplet {
 
     public static HashMap<MyPoint, ArrayList<MyPoint>> shortest_Paths = new HashMap<>();
 
-    // public static ArrayList<ArrayList<MyPoint>> shortest_Paths = new ArrayList<>();
+    // public static ArrayList<ArrayList<MyPoint>> shortest_Paths = new
+    // ArrayList<>();
     public static ArrayList<MyPoint> startPoints = new ArrayList<>();
 
     // Feel free to add any additional methods or attributes you want. Please put
@@ -327,11 +328,18 @@ public class App extends PApplet {
     public static int initial_mana_gained_per_second;
     public static int current_mana_value; // 这个变量在Topbar里赋值
 
+    private double initial_tower_range;
+    private double initial_tower_firing_speed;
+    private int initial_tower_damage;
+    private int initial_tower_cost;
+
     public static JSONArray waves;
 
-    private Gremlin gremlin;
     private PImage gremlin_image;
-    private Gremlin gremlin2;
+    protected PImage tower_0_image;
+    protected PImage tower_1_image;
+    protected PImage tower_2_image;
+    private HashMap<Integer, PImage> tower_image_map = new HashMap<>();
 
     public static PImage[] gremlin_dead = new PImage[5];
 
@@ -445,6 +453,11 @@ public class App extends PApplet {
         loadBackGround(Map_Grid);
         // --------------Initialize the map grid END----------
 
+        initial_tower_range = gameJson.getDouble("initial_tower_range");
+        initial_tower_firing_speed = gameJson.getDouble("initial_tower_firing_speed");
+        initial_tower_damage = gameJson.getInt("initial_tower_damage");
+        initial_tower_cost = gameJson.getInt("tower_cost");
+
         initial_mana = gameJson.getInt("initial_mana");
         initial_mana_gained_per_second = gameJson.getInt("initial_mana_gained_per_second");
         initial_mana_cap = gameJson.getInt("initial_mana_cap");
@@ -464,7 +477,7 @@ public class App extends PApplet {
         MyPoint end = new MyPoint(wizard_house_x, wizard_house_y);
         for (int x = 0; x < startPoints.size(); x++) {
             MyPoint start = startPoints.get(x);
-            shortest_Paths.put(start,BreadthFirstSearch(start, end));
+            shortest_Paths.put(start, BreadthFirstSearch(start, end));
 
             // 如果是左右出生，需要加TOPBAR+上下6
             // 如果上下出生，只需要左右+6
@@ -473,32 +486,20 @@ public class App extends PApplet {
             System.out.println("Monster adds at: " + (start.getY() * CELLSIZE) + " " + (start.getX() * CELLSIZE));
         }
 
-        for(int x=0; x<startPoints.size(); x++){
+        for (int x = 0; x < startPoints.size(); x++) {
             System.out.println("shortestPath: " + shortest_Paths.get(startPoints.get(x)).toString());
         }
-        
 
         System.out.println("startPoints: " + startPoints.toString());
 
-        // System.out.println(random.nextInt(startPoints.size()));
-        // MyPoint startP = startPoints.get(0);
-
-        // gremlin = new Gremlin(startP.getX()*CELLSIZE, startP.getY() * CELLSIZE +
-        // TOPBAR + 6, true,
-        // false,this.loadImage("src/main/resources/WizardTD/gremlin.png"));
-        // gremlin.setMonsterImage(loadImage("src/main/resources/WizardTD/gremlin.png"));
         gremlin_image = this.loadImage("src/main/resources/WizardTD/gremlin.png");
-        // gremlin2 = new Gremlin(startP.getX()*CELLSIZE * 2, startP.getY() * CELLSIZE +
-        // TOPBAR + 6, true,
-        // false,this.loadImage("src/main/resources/WizardTD/gremlin.png"));
-        // gremlin2.setMonsterImage(loadImage("src/main/resources/WizardTD/gremlin.png"));
 
-        // Load images during setup
-        // Eg:
-        // loadImage("src/main/resources/WizardTD/tower0.png");
-        // loadImage("src/main/resources/WizardTD/tower1.png");
-        // loadImage("src/main/resources/WizardTD/tower2.png");
-        // this.grass.setSprite(this.loadImage("src/main/resources/WizardTD/grass.png"));
+        tower_0_image = this.loadImage("src/main/resources/WizardTD/tower0.png");
+        tower_1_image = this.loadImage("src/main/resources/WizardTD/tower1.png");
+        tower_2_image = this.loadImage("src/main/resources/WizardTD/tower2.png");
+        tower_image_map.put(0, tower_0_image);
+        tower_image_map.put(1, tower_1_image);
+        tower_image_map.put(2, tower_2_image);
 
     }
 
@@ -527,11 +528,16 @@ public class App extends PApplet {
 
     public static Button ffButton = new Button("FF", "2x Speed", 650, 50);
     public static Button pauseButton = new Button("P", "PAUSE", 650, 100);
+    public static Button buildTowerButton = new Button("T", "Build\nTower", 650, 150);
     public static boolean FF_press_condition = false;
     public static boolean Pause_press_condition = false;
+    public static boolean build_tower_condition = false;
+    private boolean yes_to_place_tower = false;
 
     public static String mouse_on_which_button;
 
+
+    public Tower tower;
     @Override
     public void mousePressed(MouseEvent e) {
         // initial_mana_cap += 250;
@@ -542,7 +548,18 @@ public class App extends PApplet {
         if (pauseButton.mouse_on_button(this)) {
             Pause_press_condition = !Pause_press_condition;
         }
+
+        if (buildTowerButton.mouse_on_button(this)) {
+            build_tower_condition = !build_tower_condition;
+        }
+
+        // if(tower.valid_place_tower(this)){
+        //     yes_to_place_tower = !yes_to_place_tower;
+        // }
+
     }
+
+
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -676,8 +693,6 @@ public class App extends PApplet {
             one_wave_monster.add(monster_quantity);
             monster_info_map.put(j, one_wave_monster);
         }
-        // }
-
     }
 
     // draw the grelin death animation on (x, y) position
@@ -687,6 +702,7 @@ public class App extends PApplet {
      * draw() will be called once every second.
      */
     public static MyPoint spawn_point;
+
     @Override
     public void draw() {
         background(background_R, background_G, background_B);
@@ -698,6 +714,20 @@ public class App extends PApplet {
             for (int j = 0; j < 20; j++) {
                 image(mapTile[i][j], j * 32, i * 32 + 40); // 在对应的位置绘制图片
             }
+        }
+
+        if(build_tower_condition){
+            
+            
+            tower = new Tower(initial_tower_range, initial_tower_firing_speed,initial_tower_damage,initial_tower_cost);
+            tower.setTowerImage(tower_0_image);
+            tower.setTowerWithMouse(this);
+            // if(yes_to_place_tower){
+            //     tower.setTowerXY(tower.get_X(),tower.get_Y());
+                
+            // }
+            System.out.println(tower.valid_place_tower(this));
+            tower.draw(this);
         }
 
         // 在wave_change()里，每次wave更变，处理monster的更变
@@ -714,22 +744,20 @@ public class App extends PApplet {
         spawn_point = startPoints.get(random.nextInt(startPoints.size()));
         int position_adjust = (CELLSIZE - gremlin_image.width) / 2; // 这里是6
         // TODO 目前开始是从0出生的，还不是地图外
-        // for (int x = 0; x < monster_info_map.size(); x++) {
-            // 这里这个map是控制wave里monsters里面的信息的
-            double speed = (double) (monster_info_map.get(0).get(2));
-            if (this.Monster_timer < 0 && monster_count != 0) {
-                monsterList.add(new Gremlin(spawn_point.getY() * CELLSIZE + position_adjust,
-                        spawn_point.getX() * CELLSIZE + TOPBAR + position_adjust, speed, true, false, this.gremlin_image));
-                monster_count--;
 
-                this.Monster_timer = (wave_duration / monster_quantity) * FPS;
-            }
-        // }
+        // 这里这个map是控制wave里monsters里面的信息的
+        double speed = (double) (monster_info_map.get(0).get(2));
+        if (this.Monster_timer < 0 && monster_count != 0) {
+            monsterList.add(new Gremlin(spawn_point.getY() * CELLSIZE + position_adjust,
+                    spawn_point.getX() * CELLSIZE + TOPBAR + position_adjust, speed, true, false, this.gremlin_image));
+            monster_count--;
 
-        // gremlin.tick();
-        // gremlin.draw(this);
-        // gremlin2.tick();
-        // gremlin2.draw(this);
+            this.Monster_timer = (wave_duration / monster_quantity) * FPS;
+        }
+
+
+        
+        
 
         image(wizardImage, wizard_house_display_y, wizard_house_display_x);
 
