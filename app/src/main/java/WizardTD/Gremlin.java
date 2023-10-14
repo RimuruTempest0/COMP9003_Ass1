@@ -62,7 +62,7 @@ public class Gremlin extends Monster {
             // Move Right
             if(this.monster_x < next_point.getY()*CELLSIZE + 6)
             {
-                this.monster_x += monster_speed;
+                this.monster_x += this.speed;
                 if(this.monster_x == next_point.getY()*CELLSIZE + 6){
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
@@ -72,7 +72,7 @@ public class Gremlin extends Monster {
             // Move Left
             if(this.monster_x > next_point.getY()*CELLSIZE + 6)
             {
-                this.monster_x -= monster_speed;
+                this.monster_x -= this.speed;
                 if(this.monster_x == next_point.getY()*CELLSIZE + 6){
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
@@ -83,7 +83,7 @@ public class Gremlin extends Monster {
             // Move Down
             if(this.monster_y < next_point.getX()*CELLSIZE+ TOPBAR + 6)
             {
-                this.monster_y += monster_speed;
+                this.monster_y += this.speed;
                 if(this.monster_y == next_point.getX()*CELLSIZE+ TOPBAR+6){
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
@@ -93,7 +93,7 @@ public class Gremlin extends Monster {
             // Move Up
             if(this.monster_y > next_point.getX()*CELLSIZE+ TOPBAR + 6)
             {
-                this.monster_y -= monster_speed;
+                this.monster_y -= this.speed;
                 if(this.monster_y == next_point.getX()*CELLSIZE+ TOPBAR+6){
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);

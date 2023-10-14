@@ -536,8 +536,8 @@ public class App extends PApplet {
 
     public static String mouse_on_which_button;
 
-
     public Tower tower;
+
     @Override
     public void mousePressed(MouseEvent e) {
         // initial_mana_cap += 250;
@@ -554,12 +554,10 @@ public class App extends PApplet {
         }
 
         // if(tower.valid_place_tower(this)){
-        //     yes_to_place_tower = !yes_to_place_tower;
+        // yes_to_place_tower = !yes_to_place_tower;
         // }
 
     }
-
-
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -627,7 +625,7 @@ public class App extends PApplet {
             // monsterList.add(gremlin);
             // }
             monster_count = monster_quantity;
-            System.out.println(Monster_timer + "-----\n");
+            System.out.println("Monster_timer to draw: "+Monster_timer + "-----\n");
             processWave = false;
         }
 
@@ -674,8 +672,8 @@ public class App extends PApplet {
         // 提取monsters信息
         JSONArray monsters = wave.getJSONArray("monsters");
         // monsters.size(): 第三波正常：2
+        ArrayList<Object> one_wave_monster = new ArrayList<>();
         for (Integer j = 0; j < monsters.size(); j++) {
-            ArrayList<Object> one_wave_monster = new ArrayList<>();
             JSONObject monster = monsters.getJSONObject(j);
 
             monster_type = monster.getString("type");
@@ -691,8 +689,8 @@ public class App extends PApplet {
             one_wave_monster.add(monster_armour);
             one_wave_monster.add(mana_gained_on_kill);
             one_wave_monster.add(monster_quantity);
-            monster_info_map.put(j, one_wave_monster);
         }
+        monster_info_map.put(cur_wave, one_wave_monster);
     }
 
     // draw the grelin death animation on (x, y) position
@@ -716,17 +714,16 @@ public class App extends PApplet {
             }
         }
 
-        if(build_tower_condition){
-            
-            
-            tower = new Tower(initial_tower_range, initial_tower_firing_speed,initial_tower_damage,initial_tower_cost);
+        if (build_tower_condition) {
+
+            tower = new Tower(initial_tower_range, initial_tower_firing_speed, initial_tower_damage,
+                    initial_tower_cost);
             tower.setTowerImage(tower_0_image);
             tower.setTowerWithMouse(this);
             // if(yes_to_place_tower){
-            //     tower.setTowerXY(tower.get_X(),tower.get_Y());
-                
+            // tower.setTowerXY(tower.get_X(),tower.get_Y());
             // }
-            System.out.println(tower.valid_place_tower(this));
+            // System.out.println(tower.valid_place_tower(this));
             tower.draw(this);
         }
 
@@ -742,22 +739,21 @@ public class App extends PApplet {
 
         // 生成Monster List
         spawn_point = startPoints.get(random.nextInt(startPoints.size()));
-        int position_adjust = (CELLSIZE - gremlin_image.width) / 2; // 这里是6
+        int gremlin_adjust = (CELLSIZE - gremlin_image.width) / 2; // 这里是6
         // TODO 目前开始是从0出生的，还不是地图外
 
         // 这里这个map是控制wave里monsters里面的信息的
-        double speed = (double) (monster_info_map.get(0).get(2));
-        if (this.Monster_timer < 0 && monster_count != 0) {
-            monsterList.add(new Gremlin(spawn_point.getY() * CELLSIZE + position_adjust,
-                    spawn_point.getX() * CELLSIZE + TOPBAR + position_adjust, speed, true, false, this.gremlin_image));
-            monster_count--;
+        if (monster_info_map.containsKey(current_wave)) {
+            double speed = (double) (monster_info_map.get(current_wave).get(2));
+            if (this.Monster_timer < 0 && monster_count != 0) {
+                monsterList.add(new Gremlin(spawn_point.getY() * CELLSIZE + gremlin_adjust,
+                        spawn_point.getX() * CELLSIZE + TOPBAR + gremlin_adjust, speed, true, false,
+                        this.gremlin_image));
+                monster_count--;
 
-            this.Monster_timer = (wave_duration / monster_quantity) * FPS;
+                this.Monster_timer = (wave_duration / monster_quantity) * FPS;
+            }
         }
-
-
-        
-        
 
         image(wizardImage, wizard_house_display_y, wizard_house_display_x);
 
