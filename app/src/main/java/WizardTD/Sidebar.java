@@ -1,5 +1,7 @@
 package WizardTD;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Sidebar extends App {
     public Sidebar() {
@@ -18,6 +20,11 @@ public class Sidebar extends App {
     private Button upgradeDamageButton = new Button(300,"U3", "Upgrade\nDamage", sideBar_button_x, sideBar_button_y + 250);
     private Button manaPoolButton = new Button(300,"M", "Mana Pool\nCost: ", sideBar_button_x, sideBar_button_y + 300);
 
+
+    private ArrayList<Tower> tower_list = new ArrayList<>();
+    private HashMap<Tower, MyPoint> tower_to_point = new HashMap<>();
+    private HashMap<MyPoint, Tower> point_to_tower = new HashMap<>();
+    private Tower tower;
     
     public void draw(App app) {
         // 先画一个大的矩形，要盖住右侧出生的小兵, Right bar
@@ -51,10 +58,46 @@ public class Sidebar extends App {
             
         }
 
-        if(Build_tower_condition)
-        {
+        // if(Build_tower_condition)
+        // {
+        //     buildTowerButton.drawYellow(app);
+        // }
+
+            //------------------------------Tower Draw START---------------------------------
+        if (Build_tower_condition) {
             buildTowerButton.drawYellow(app);
+            tower = new Tower(initial_tower_range, initial_tower_firing_speed, initial_tower_damage,
+                    initial_tower_cost);
+            tower.setTowerImage(tower_0_image);
+            tower.setTowerWithMouse(app);
+            if (tower.valid_place_tower(app)) {
+                tower.setTowerXY((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
+                if (Place_tower_on_map && (initial_mana > 0)) {
+                    MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
+                    tower_to_point.put(tower, tower_Point);
+                    point_to_tower.put(tower_Point, tower);
+                    tower_list.add(tower);
+
+                    initial_mana-=initial_tower_cost;
+                    Place_tower_on_map = !Place_tower_on_map;
+                    Build_tower_condition = !Build_tower_condition;
+                }
+            }
+            tower.draw(app);
         }
+
+        for (Tower tower : tower_list) {
+            if (tower_to_point.size() != 0 && point_to_tower.size() != 0) {
+                int x = tower_to_point.get(tower).getX();
+                int y = tower_to_point.get(tower).getY();
+                MyPoint curTowerTpoint = new MyPoint(x, y);
+
+                tower.setTowerXY(x, y);
+                point_to_tower.get(curTowerTpoint).draw(app);
+            }
+        }
+        //------------------------------Tower Draw END---------------------------------
+
 
         
 

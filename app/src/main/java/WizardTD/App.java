@@ -328,17 +328,17 @@ public class App extends PApplet {
     public static int initial_mana_gained_per_second;
     public static int current_mana_value; // 这个变量在Topbar里赋值
 
-    private double initial_tower_range;
-    private double initial_tower_firing_speed;
-    private int initial_tower_damage;
+    public static double initial_tower_range;
+    public static double initial_tower_firing_speed;
+    public static int initial_tower_damage;
     public static int initial_tower_cost;
 
     public static JSONArray waves;
 
     private PImage gremlin_image;
-    protected PImage tower_0_image;
-    protected PImage tower_1_image;
-    protected PImage tower_2_image;
+    protected static PImage tower_0_image;
+    protected static PImage tower_1_image;
+    protected static PImage tower_2_image;
     private HashMap<Integer, PImage> tower_image_map = new HashMap<>();
 
     public static PImage[] gremlin_dead = new PImage[5];
@@ -530,6 +530,7 @@ public class App extends PApplet {
     public static boolean Pause_press_condition = false;
     public static boolean Build_tower_condition = false;
     public static boolean Place_tower_on_map = false;
+    public static boolean Range_upgrade_condition = false;
 
     public static String mouse_on_which_button;
 
@@ -551,6 +552,8 @@ public class App extends PApplet {
         if (mouseX >= 0 && mouseX <= 640 && mouseY >= TOPBAR && mouseY <= 680 && Build_tower_condition) {
             Place_tower_on_map = !Place_tower_on_map;
         }
+
+
 
     }
 
@@ -696,10 +699,7 @@ public class App extends PApplet {
      */
     public static MyPoint spawn_point;
     // private Tower tower;
-    private ArrayList<Tower> tower_list = new ArrayList<>();
-    private HashMap<Tower, MyPoint> tower_to_point = new HashMap<>();
-    private HashMap<MyPoint, Tower> point_to_tower = new HashMap<>();
-
+    
     @Override
     public void draw() {
         background(background_R, background_G, background_B);
@@ -713,41 +713,7 @@ public class App extends PApplet {
             }
         }
 
-        //------------------------------Tower Draw START---------------------------------
-        if (Build_tower_condition) {
-            Tower tower = new Tower(initial_tower_range, initial_tower_firing_speed, initial_tower_damage,
-                    initial_tower_cost);
-            tower.setTowerImage(tower_0_image);
-            tower.setTowerWithMouse(this);
-            if (tower.valid_place_tower(this)) {
-                tower.setTowerXY((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
-                if (Place_tower_on_map) {
-                    MyPoint tower_Point = new MyPoint((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
-                    tower_to_point.put(tower, tower_Point);
-                    point_to_tower.put(tower_Point, tower);
-                    tower_list.add(tower);
-
-                    initial_mana-=initial_tower_cost;
-                    Place_tower_on_map = !Place_tower_on_map;
-                    Build_tower_condition = !Build_tower_condition;
-
-                }
-            }
-            tower.draw(this);
-        }
-
-        for (Tower tower : tower_list) {
-            if (tower_to_point.size() != 0 && point_to_tower.size() != 0) {
-                int x = tower_to_point.get(tower).getX();
-                int y = tower_to_point.get(tower).getY();
-                MyPoint curTowerTpoint = new MyPoint(x, y);
-
-                tower.setTowerXY(x, y);
-                point_to_tower.get(curTowerTpoint).draw(this);
-            }
-        }
-        //------------------------------Tower Draw END---------------------------------
-
+        
         // 在wave_change()里，每次wave更变，处理monster的更变
         wave_change();
 

@@ -15,12 +15,20 @@ public class Tower extends App {
     private int range_level;
     private int speed_level;
     private int damage_level;
-    private int upgrade_count;
+    private int upgrade_count = 0;
 
     private int tower_cost;
     private PImage sprite;
 
-    
+    public void set_tower_cost(int cost)
+    {
+        this.tower_cost = cost;
+    }
+
+    public int get_tower_cost()
+    {
+        return this.tower_cost;
+    }
 
     public Tower(double initial_tower_range, double initial_tower_firing_speed,
             int initial_tower_damage, int initial_tower_cost) {
@@ -61,7 +69,7 @@ public class Tower extends App {
 
     public void upgrade_cost() {
         this.upgrade_count++;
-        this.tower_cost += upgrade_count * upgrade_count;
+        this.tower_cost += upgrade_count * 20 + initial_tower_cost;
     }
 
     public void upgrade_range() {
@@ -116,12 +124,12 @@ public class Tower extends App {
     }
 
     public boolean mouse_on_tower(App app) {
-        int mouseX = app.mouseX;
-        int mouseY = app.mouseY;
-        if (mouseX <= this.tower_x + this.sprite.width &&
-                mouseX >= this.tower_x &&
-                mouseY >= this.tower_y &&
-                mouseY <= this.tower_y + this.sprite.height) {
+        int mouse_X = app.mouseX;
+        int mouse_Y = app.mouseY;
+        if (mouse_X <= this.tower_x + this.sprite.width &&
+                mouse_X >= this.tower_x &&
+                mouse_Y >= this.tower_y &&
+                mouse_Y <= this.tower_y + this.sprite.height) {
             return true;
 
         }
