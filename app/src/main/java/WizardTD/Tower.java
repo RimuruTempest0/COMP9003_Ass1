@@ -18,6 +18,7 @@ public class Tower extends App {
     private int upgrade_count = 0;
 
     private int tower_cost;
+    private int range_cost;
     private PImage sprite;
 
     public void set_tower_cost(int cost)
@@ -75,7 +76,15 @@ public class Tower extends App {
     public void upgrade_range() {
         this.initial_tower_range += App.CELLSIZE;
         this.range_level++;
+        this.range_cost += range_level*20;
         upgrade_cost();
+    }
+    public int getRangeLevel() {
+        return this.range_level;
+    }
+    public int getRangeCost()
+    {
+        return this.range_cost;
     }
 
     public void upgrade_speed() {
@@ -91,20 +100,18 @@ public class Tower extends App {
     }
 
     public void draw_O(App app, int level) {
-        app.stroke(255, 0, 0);
-        app.strokeWeight(1);
-        app.textSize(12);
+        app.fill(243, 10, 169);
+        app.textSize(10);
         for (int i = 0; i < level; i++) {
-            app.text("O", this.tower_x + (i * 2), this.tower_y);
+            app.text("O", this.tower_x + (i * 10), this.tower_y+5);
         }
     }
 
     public void draw_X(App app, int level) {
-        app.stroke(255, 0, 0);
-        app.strokeWeight(1);
-        app.textSize(12);
+        app.fill(243, 10, 169);
+        app.textSize(10);
         for (int i = 0; i < level; i++) {
-            app.text("X", this.tower_x + (i * 2), this.tower_y + this.sprite.height);
+            app.text("X", this.tower_x + (i * 10), this.tower_y + this.sprite.height+5);
         }
     }
 

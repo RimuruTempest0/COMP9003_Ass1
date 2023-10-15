@@ -29,8 +29,6 @@ public class Button extends App {
         return this.button_y;
     }
 
-    // TODO get_which_button()
-    // private boolean mouse_on_button()
     public boolean mouse_on_button(App app) {
         int mouseX = app.mouseX;
         int mouseY = app.mouseY;

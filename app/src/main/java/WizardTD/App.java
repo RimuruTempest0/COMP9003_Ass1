@@ -530,7 +530,9 @@ public class App extends PApplet {
     public static boolean Pause_press_condition = false;
     public static boolean Build_tower_condition = false;
     public static boolean Place_tower_on_map = false;
-    public static boolean Range_upgrade_condition = false;
+
+    public static boolean Upgrade_range_condition = false;
+    public static boolean Deploy_upgrade = false;
 
     public static String mouse_on_which_button;
 
@@ -551,6 +553,22 @@ public class App extends PApplet {
 
         if (mouseX >= 0 && mouseX <= 640 && mouseY >= TOPBAR && mouseY <= 680 && Build_tower_condition) {
             Place_tower_on_map = !Place_tower_on_map;
+        }
+
+        if (Sidebar.upgradeRangeButton.mouse_on_button(this)) {
+            Upgrade_range_condition = !Upgrade_range_condition;
+        }
+
+        if(Upgrade_range_condition) {
+            MyPoint tower_Point = new MyPoint((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
+            if(Sidebar.point_to_tower.containsKey(tower_Point)) {
+                Tower tower = Sidebar.point_to_tower.get(tower_Point);
+                if(tower.mouse_on_tower(this)) {
+                    Deploy_upgrade = !Deploy_upgrade;
+                }
+            }
+            
+            
         }
 
 
