@@ -331,7 +331,7 @@ public class App extends PApplet {
     private double initial_tower_range;
     private double initial_tower_firing_speed;
     private int initial_tower_damage;
-    private int initial_tower_cost;
+    public static int initial_tower_cost;
 
     public static JSONArray waves;
 
@@ -457,7 +457,6 @@ public class App extends PApplet {
         initial_tower_firing_speed = gameJson.getDouble("initial_tower_firing_speed");
         initial_tower_damage = gameJson.getInt("initial_tower_damage");
         initial_tower_cost = gameJson.getInt("tower_cost");
-
         initial_mana = gameJson.getInt("initial_mana");
         initial_mana_gained_per_second = gameJson.getInt("initial_mana_gained_per_second");
         initial_mana_cap = gameJson.getInt("initial_mana_cap");
@@ -525,37 +524,33 @@ public class App extends PApplet {
     public void keyReleased() {
 
     }
-
-    public static Button ffButton = new Button("FF", "2x Speed", 650, 50);
-    public static Button pauseButton = new Button("P", "PAUSE", 650, 100);
-    public static Button buildTowerButton = new Button("T", "Build\nTower", 650, 150);
+    
+    
     public static boolean FF_press_condition = false;
     public static boolean Pause_press_condition = false;
-    public static boolean build_tower_condition = false;
-    private boolean yes_to_place_tower = false;
+    public static boolean Build_tower_condition = false;
+    public static boolean Place_tower_on_map = false;
 
     public static String mouse_on_which_button;
-
-    public Tower tower;
 
     @Override
     public void mousePressed(MouseEvent e) {
         // initial_mana_cap += 250;
-        if (ffButton.mouse_on_button(this)) {
+        if (Sidebar.ffButton.mouse_on_button(this)) {
             FF_press_condition = !FF_press_condition;
         }
 
-        if (pauseButton.mouse_on_button(this)) {
+        if (Sidebar.pauseButton.mouse_on_button(this)) {
             Pause_press_condition = !Pause_press_condition;
         }
 
-        if (buildTowerButton.mouse_on_button(this)) {
-            build_tower_condition = !build_tower_condition;
+        if (Sidebar.buildTowerButton.mouse_on_button(this)) {
+            Build_tower_condition = !Build_tower_condition;
         }
 
-        // if(tower.valid_place_tower(this)){
-        // yes_to_place_tower = !yes_to_place_tower;
-        // }
+        if (mouseX >= 0 && mouseX <= 640 && mouseY >= TOPBAR && mouseY <= 680 && Build_tower_condition) {
+            Place_tower_on_map = !Place_tower_on_map;
+        }
 
     }
 
@@ -625,7 +620,7 @@ public class App extends PApplet {
             // monsterList.add(gremlin);
             // }
             monster_count = monster_quantity;
-            System.out.println("Monster_timer to draw: "+Monster_timer + "-----\n");
+            System.out.println("Monster_timer to draw: " + Monster_timer + "-----\n");
             processWave = false;
         }
 
@@ -700,6 +695,10 @@ public class App extends PApplet {
      * draw() will be called once every second.
      */
     public static MyPoint spawn_point;
+    // private Tower tower;
+    private ArrayList<Tower> tower_list = new ArrayList<>();
+    private HashMap<Tower, MyPoint> tower_to_point = new HashMap<>();
+    private HashMap<MyPoint, Tower> point_to_tower = new HashMap<>();
 
     @Override
     public void draw() {
@@ -714,18 +713,40 @@ public class App extends PApplet {
             }
         }
 
-        if (build_tower_condition) {
-
-            tower = new Tower(initial_tower_range, initial_tower_firing_speed, initial_tower_damage,
+        //------------------------------Tower Draw START---------------------------------
+        if (Build_tower_condition) {
+            Tower tower = new Tower(initial_tower_range, initial_tower_firing_speed, initial_tower_damage,
                     initial_tower_cost);
             tower.setTowerImage(tower_0_image);
             tower.setTowerWithMouse(this);
-            // if(yes_to_place_tower){
-            // tower.setTowerXY(tower.get_X(),tower.get_Y());
-            // }
-            // System.out.println(tower.valid_place_tower(this));
+            if (tower.valid_place_tower(this)) {
+                tower.setTowerXY((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
+                if (Place_tower_on_map) {
+                    MyPoint tower_Point = new MyPoint((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
+                    tower_to_point.put(tower, tower_Point);
+                    point_to_tower.put(tower_Point, tower);
+                    tower_list.add(tower);
+
+                    initial_mana-=initial_tower_cost;
+                    Place_tower_on_map = !Place_tower_on_map;
+                    Build_tower_condition = !Build_tower_condition;
+
+                }
+            }
             tower.draw(this);
         }
+
+        for (Tower tower : tower_list) {
+            if (tower_to_point.size() != 0 && point_to_tower.size() != 0) {
+                int x = tower_to_point.get(tower).getX();
+                int y = tower_to_point.get(tower).getY();
+                MyPoint curTowerTpoint = new MyPoint(x, y);
+
+                tower.setTowerXY(x, y);
+                point_to_tower.get(curTowerTpoint).draw(this);
+            }
+        }
+        //------------------------------Tower Draw END---------------------------------
 
         // 在wave_change()里，每次wave更变，处理monster的更变
         wave_change();

@@ -10,11 +10,13 @@ public class Sidebar extends App {
     private int sideBar_button_y = 50;
     
     
-    
-    private Button upgradeRangeButton = new Button("U1", "Upgrade\nRange", sideBar_button_x, sideBar_button_y + 150);
-    private Button upgradeSpeedButton = new Button("U2", "Upgrade\nSpeed", sideBar_button_x, sideBar_button_y + 200);
-    private Button upgradeDamageButton = new Button("U3", "Upgrade\nDamage", sideBar_button_x, sideBar_button_y + 250);
-    private Button manaPoolButton = new Button("M", "Mana Pool\nCost: ", sideBar_button_x, sideBar_button_y + 300);
+    public static Button ffButton = new Button(0,"FF", "2x Speed", 650, 50);
+    public static Button pauseButton = new Button(0,"P", "PAUSE", 650, 100);
+    public static Button buildTowerButton = new Button(initial_tower_cost,"T", "Build\nTower", 650, 150);
+    private Button upgradeRangeButton = new Button(300,"U1", "Upgrade\nRange", sideBar_button_x, sideBar_button_y + 150);
+    private Button upgradeSpeedButton = new Button(300,"U2", "Upgrade\nSpeed", sideBar_button_x, sideBar_button_y + 200);
+    private Button upgradeDamageButton = new Button(300,"U3", "Upgrade\nDamage", sideBar_button_x, sideBar_button_y + 250);
+    private Button manaPoolButton = new Button(300,"M", "Mana Pool\nCost: ", sideBar_button_x, sideBar_button_y + 300);
 
     
     public void draw(App app) {
@@ -49,12 +51,15 @@ public class Sidebar extends App {
             
         }
 
-        
+        if(Build_tower_condition)
+        {
+            buildTowerButton.drawYellow(app);
+        }
 
         
 
         if (current_mana_value > 208) {
-            buildTowerButton.drawYellow(app);
+            
             upgradeRangeButton.drawYellow(app);
             upgradeSpeedButton.drawYellow(app);
             upgradeDamageButton.drawYellow(app);

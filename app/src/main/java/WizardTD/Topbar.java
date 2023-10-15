@@ -6,6 +6,8 @@ public class Topbar extends App {
     private final int mana_X = BOARD_WIDTH * CELLSIZE / 2;
     private final int text_y = 30;
 
+    private int mana_inner_width;
+
     private final int mana_box_x = BOARD_WIDTH * CELLSIZE / 2 + 70;
     private final int mana_box_y = 12;
 
@@ -14,8 +16,6 @@ public class Topbar extends App {
     public Topbar() {
 
     }
-
-
     public void draw(App app) {
         
         
@@ -47,10 +47,9 @@ public class Topbar extends App {
 
         // 画动态，这个mana其实是根据config里面的initial_mana初始的，应该可以在app里面计算然后传过来
         current_mana_value = initial_mana + initial_mana_gained_per_second * sec;
-        int mana_inner_width = (int)(((double)current_mana_value/(double)initial_mana_cap) * (double)mana_width);
+        mana_inner_width = (int)(((double)current_mana_value/(double)initial_mana_cap) * (double)mana_width);
         if (current_mana_value <= initial_mana_cap) {
             app.fill(171, 219, 227);
-            
             app.rect(mana_box_x, mana_box_y, mana_inner_width, mana_height);
             app.fill(0);
             app.text(current_mana_value + "/" + initial_mana_cap, mana_info_x, text_y);

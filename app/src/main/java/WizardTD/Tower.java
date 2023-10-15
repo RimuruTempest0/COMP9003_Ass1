@@ -1,4 +1,5 @@
 package WizardTD;
+
 import processing.core.PImage;
 
 public class Tower extends App {
@@ -19,8 +20,7 @@ public class Tower extends App {
     private int tower_cost;
     private PImage sprite;
 
-    public Tower() {
-    }
+    
 
     public Tower(double initial_tower_range, double initial_tower_firing_speed,
             int initial_tower_damage, int initial_tower_cost) {
@@ -34,6 +34,14 @@ public class Tower extends App {
         this.upgrade_count = 0;
         this.tower_cost = initial_tower_cost;
 
+    }
+
+    public int get_X() {
+        return this.tower_x;
+    }
+
+    public int get_Y() {
+        return this.tower_y;
     }
 
     public void setTowerImage(PImage sprite) {
@@ -124,26 +132,21 @@ public class Tower extends App {
         int tower_grid_x = (this.tower_y - TOPBAR) / 32;
         int tower_grid_y = this.tower_x / 32;
         if (app.mouseX >= 0 && app.mouseX <= 640 && app.mouseY >= TOPBAR && app.mouseY <= 680) {
-            if (Map_Grid[tower_grid_x][tower_grid_y] == ' ') {
-                return true;
-            }
+            try {
+                if (Map_Grid[tower_grid_x][tower_grid_y] == ' ') {
+                    return true;
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {}
         }
         return false;
     }
 
-    public int get_X(){
-        return this.tower_x;
-    }
-    public int get_Y(){
-        return this.tower_y;
-    }
     public void draw(App app) {
 
         if (mouse_on_tower(app)) {
             draw_range(app);
         }
-        
-        
+
         app.image(this.sprite, this.tower_x, this.tower_y);
     }
 }

@@ -2,17 +2,19 @@ package WizardTD;
 
 public class Button extends App {
 
+    private int button_cost;
     private String content_in_rect;
-
+    private String content_alongSide;
     private int button_x;
     private final int button_y;
 
     private final int button_width = 40;
     private final int button_hight = 40;
 
-    private String content_alongSide;
+    
 
-    public Button(String content_in_rect, String content_alongSide, int button_x, int button_y) {
+    public Button(int button_cost, String content_in_rect, String content_alongSide, int button_x, int button_y) {
+        this.button_cost = button_cost;
         this.content_in_rect = content_in_rect;
         this.content_alongSide = content_alongSide;
         this.button_x = button_x;
@@ -49,7 +51,7 @@ public class Button extends App {
         app.stroke(0);
         app.fill(0);
         app.textSize(12);
-        app.text("Cost: 300", this.button_x - 65, this.button_y + 15);
+        app.text("Cost: "+this.button_cost, this.button_x - 65, this.button_y + 15);
     }
 
     public void drawGrey(App app) {

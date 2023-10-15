@@ -111,10 +111,18 @@ public class Gremlin extends Monster {
          * 然后monster移动的时候就跟随存储的‘X’的x和y
          */
         if (isAlive) {
-            // app.Fill(); // 不填充颜色
-            // app.stroke(255, 0, 0); // 设置边框颜色为红色
-            // app.strokeWeight(2);
-            // app.rect(i * 32, j * 32 + 6, 32, 32);
+            // Gremlin red life bar
+            app.noFill();
+            app.stroke(255, 0, 0); // 设置边框颜色为红色
+            app.strokeWeight(2);
+            app.rect(this.monster_x, this.monster_y-10, 20, 3);
+
+            // Gremlin green life bar
+            app.noFill();
+            app.stroke(10, 240, 60); // 设置边框颜色为绿色
+            app.strokeWeight(2);
+            app.rect(this.monster_x, this.monster_y-10, 20, 3);
+
             app.image(this.sprite, this.monster_x, this.monster_y);
         } else {      
             drawGremlinDeath(monster_x, monster_y, app);

@@ -57,7 +57,7 @@
   "initial_tower_damage": 40,
   "initial_mana": 200,
   "initial_mana_cap": 1000,
-  "initial_mana_gained_per_second": 2,
+  "initial_mana_gained_per_second": 5,
   "tower_cost": 100,
   "mana_pool_spell_initial_cost": 100,
   "mana_pool_spell_cost_increase_per_use": 150,
