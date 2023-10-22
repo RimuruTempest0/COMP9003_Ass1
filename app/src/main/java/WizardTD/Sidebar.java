@@ -10,14 +10,15 @@ public class Sidebar extends App {
 
     private static final int sideBar_button_x = 650;
     private static int sideBar_button_y = 50;
-    
-    
+    private static int rangeCost = 10;
+    private static int speedCost = 10;
+    private static int damageCost = 10;
     public static Button ffButton = new Button(0,"FF", "2x Speed", 650, 50);
     public static Button pauseButton = new Button(0,"P", "PAUSE", 650, 100);
     public static Button buildTowerButton = new Button(initial_tower_cost,"T", "Build\nTower", 650, 150);
-    public static Button upgradeRangeButton = new Button(300,"U1", "Upgrade\nRange", sideBar_button_x, sideBar_button_y + 150);
-    private Button upgradeSpeedButton = new Button(300,"U2", "Upgrade\nSpeed", sideBar_button_x, sideBar_button_y + 200);
-    private Button upgradeDamageButton = new Button(300,"U3", "Upgrade\nDamage", sideBar_button_x, sideBar_button_y + 250);
+    public static Button upgradeRangeButton = new Button(rangeCost,"U1", "Upgrade\nRange", sideBar_button_x, sideBar_button_y + 150);
+    public static Button upgradeSpeedButton = new Button(speedCost,"U2", "Upgrade\nSpeed", sideBar_button_x, sideBar_button_y + 200);
+    public static Button upgradeDamageButton = new Button(damageCost,"U3", "Upgrade\nDamage", sideBar_button_x, sideBar_button_y + 250);
     private Button manaPoolButton = new Button(300,"M", "Mana Pool\nCost: ", sideBar_button_x, sideBar_button_y + 300);
 
 
@@ -90,12 +91,51 @@ public class Sidebar extends App {
                 if(Deploy_upgrade) {
                     if(tower.getRangeLevel()<3){
                         tower.upgrade_range();
-                        initial_mana -= tower.getRangeLevel()*20;
+                        if(rangeCost<30) {rangeCost += 10;}
+                        initial_mana -= tower.getRangeLevel()*10;
                     }else{
-                        System.out.println("Tow Range Level Max !!!");
+                        System.out.println("Tower Range Level Max !!!");
                     }
                     Deploy_upgrade = !Deploy_upgrade;
                     Upgrade_range_condition = !Upgrade_range_condition;
+                }
+            }
+        }
+
+        if (Upgrade_speed_condition) {
+            upgradeSpeedButton.drawYellow(app);
+            MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
+            if(point_to_tower.containsKey(tower_Point)) {
+                Tower tower = point_to_tower.get(tower_Point);
+                if(Deploy_upgrade) {
+                    if(tower.getSpeedLevel()<3){
+                        tower.upgrade_speed();
+                        if(speedCost<30) {speedCost += 10;}
+                        initial_mana -= tower.getSpeedLevel()*10;
+                    }else{
+                        System.out.println("Tower Speed Level Max !!!");
+                    }
+                    Deploy_upgrade = !Deploy_upgrade;
+                    Upgrade_speed_condition = !Upgrade_speed_condition;
+                }
+            }
+        }
+
+        if (Upgrade_damage_condition) {
+            upgradeDamageButton.drawYellow(app);
+            MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
+            if(point_to_tower.containsKey(tower_Point)) {
+                Tower tower = point_to_tower.get(tower_Point);
+                if(Deploy_upgrade) {
+                    if(tower.getDamageLevel()<3){
+                        tower.upgrade_damage();
+                        if(damageCost<30) {damageCost += 10;}
+                        initial_mana -= tower.getDamageLevel()*10;
+                    }else{
+                        System.out.println("Tower Damage Level Max !!!");
+                    }
+                    Deploy_upgrade = !Deploy_upgrade;
+                    Upgrade_damage_condition = !Upgrade_damage_condition;
                 }
             }
         }
@@ -106,39 +146,53 @@ public class Sidebar extends App {
                 int y = tower_to_point.get(tower).getY();
                 // MyPoint curTowerTpoint = new MyPoint(x, y);
 
-                tower.setTowerXY(x, y);
-                tower.draw(app);
-                tower.draw_O(app, tower.getRangeLevel());
+                if(tower.getDamageLevel() >= 2 && tower.getRangeLevel() >= 2 && tower.getSpeedLevel() >= 2)
+                {
+                    tower.setTowerImage(tower_2_image);
+                    tower.setTowerXY(x, y);
+                    tower.draw(app);
+                    tower.draw_square(app, tower.getSpeedLevel()-2);
+                    tower.draw_O(app, tower.getRangeLevel()-2);
+                    tower.draw_X(app, tower.getDamageLevel()-2);
+                } else if(tower.getDamageLevel() >= 1 && tower.getRangeLevel() >= 1 && tower.getSpeedLevel() >= 1) {
+                    tower.setTowerImage(tower_1_image);
+                    tower.setTowerXY(x, y);
+                    tower.draw(app);
+                    tower.draw_square(app, tower.getSpeedLevel()-1);
+                    tower.draw_O(app, tower.getRangeLevel()-1);
+                    tower.draw_X(app, tower.getDamageLevel()-1);
+                } else {
+                    tower.setTowerXY(x, y);
+                    tower.draw(app);
+                    tower.draw_square(app, tower.getSpeedLevel());
+                    tower.draw_O(app, tower.getRangeLevel());
+                    tower.draw_X(app, tower.getDamageLevel());
+                }
+                
+                
             }
         }
         //------------------------------Tower Draw END---------------------------------
 
 
         
-
-        if (current_mana_value > 208) {
-            
-            
-            upgradeSpeedButton.drawYellow(app);
-            upgradeDamageButton.drawYellow(app);
-        }
         
 
         if (buildTowerButton.mouse_on_button(app)) {
             buildTowerButton.drawCost(app);
         }
 
-        // if (upgradeRangeButton.mouse_on_button(app)) {
-        //     upgradeRangeButton.drawCost(app);
-        // }
+        if (upgradeRangeButton.mouse_on_button(app)) {
+            upgradeRangeButton.drawCostValue(app, rangeCost);
+        }
 
-        // if (upgradeSpeedButton.mouse_on_button(app)) {
-        //     upgradeSpeedButton.drawCost(app);
-        // }
+        if (upgradeSpeedButton.mouse_on_button(app)) {
+            upgradeSpeedButton.drawCostValue(app,speedCost);
+        }
 
-        // if (upgradeDamageButton.mouse_on_button(app)) {
-        //     upgradeDamageButton.drawCost(app);
-        // }
+        if (upgradeDamageButton.mouse_on_button(app)) {
+            upgradeDamageButton.drawCostValue(app, damageCost);
+        }
 
         if (manaPoolButton.mouse_on_button(app)) {
             manaPoolButton.drawCost(app);

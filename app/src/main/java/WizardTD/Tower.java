@@ -18,7 +18,9 @@ public class Tower extends App {
     private int upgrade_count = 0;
 
     private int tower_cost;
-    private int range_cost;
+    // private int range_cost;
+    // private int speed_cost;
+    
     private PImage sprite;
 
     public void set_tower_cost(int cost)
@@ -76,27 +78,31 @@ public class Tower extends App {
     public void upgrade_range() {
         this.initial_tower_range += App.CELLSIZE;
         this.range_level++;
-        this.range_cost += range_level*20;
+        // this.range_cost += 10;
         upgrade_cost();
     }
     public int getRangeLevel() {
         return this.range_level;
     }
-    public int getRangeCost()
-    {
-        return this.range_cost;
-    }
+    
 
     public void upgrade_speed() {
         this.initial_tower_firing_speed += 0.5;
         this.speed_level++;
+        // this.speed_cost += 10;
         upgrade_cost();
+    }
+    public int getSpeedLevel() {
+        return this.speed_level;
     }
 
     public void upgrade_damage() {
         this.tower_damage += (initial_tower_damage / 2);
         this.damage_level++;
         upgrade_cost();
+    }
+    public int getDamageLevel() {
+        return this.damage_level;
     }
 
     public void draw_O(App app, int level) {
@@ -111,7 +117,7 @@ public class Tower extends App {
         app.fill(243, 10, 169);
         app.textSize(10);
         for (int i = 0; i < level; i++) {
-            app.text("X", this.tower_x + (i * 10), this.tower_y + this.sprite.height+5);
+            app.text("X", this.tower_x + (i * 10), this.tower_y + this.sprite.height);
         }
     }
 
@@ -119,7 +125,8 @@ public class Tower extends App {
         app.noFill(); // 不填充颜色
         app.stroke(10, 161, 243); // 设置边框颜色为蓝色
         app.strokeWeight(level);
-        app.rect(this.tower_x + 2, this.tower_y + 2, 28, 28);
+        app.rect(this.tower_x + 5, this.tower_y + 5, 20, 20);
+        app.strokeWeight(1);
     }
 
     public void draw_range(App app) {

@@ -532,7 +532,11 @@ public class App extends PApplet {
     public static boolean Place_tower_on_map = false;
 
     public static boolean Upgrade_range_condition = false;
+    public static boolean Upgrade_speed_condition = false;
+    public static boolean Upgrade_damage_condition = false;
     public static boolean Deploy_upgrade = false;
+
+    
 
     public static String mouse_on_which_button;
 
@@ -567,8 +571,34 @@ public class App extends PApplet {
                     Deploy_upgrade = !Deploy_upgrade;
                 }
             }
-            
-            
+        }
+
+        if (Sidebar.upgradeSpeedButton.mouse_on_button(this)) {
+            Upgrade_speed_condition = !Upgrade_speed_condition;
+        }
+
+        if(Upgrade_speed_condition) {
+            MyPoint tower_Point = new MyPoint((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
+            if(Sidebar.point_to_tower.containsKey(tower_Point)) {
+                Tower tower = Sidebar.point_to_tower.get(tower_Point);
+                if(tower.mouse_on_tower(this)) {
+                    Deploy_upgrade = !Deploy_upgrade;
+                }
+            } 
+        }
+
+        if (Sidebar.upgradeDamageButton.mouse_on_button(this)) {
+            Upgrade_damage_condition = !Upgrade_damage_condition;
+        }
+
+        if(Upgrade_damage_condition) {
+            MyPoint tower_Point = new MyPoint((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
+            if(Sidebar.point_to_tower.containsKey(tower_Point)) {
+                Tower tower = Sidebar.point_to_tower.get(tower_Point);
+                if(tower.mouse_on_tower(this)) {
+                    Deploy_upgrade = !Deploy_upgrade;
+                }
+            } 
         }
 
 

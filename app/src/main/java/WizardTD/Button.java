@@ -52,6 +52,16 @@ public class Button extends App {
         app.text("Cost: "+this.button_cost, this.button_x - 65, this.button_y + 15);
     }
 
+    public void drawCostValue(App app, int value) {
+        app.stroke(0);
+        app.fill(255);
+        app.rect(this.button_x - 65, this.button_y, 60, 20);
+        app.stroke(0);
+        app.fill(0);
+        app.textSize(12);
+        app.text("Cost: "+value, this.button_x - 65, this.button_y + 15);
+    }
+
     public void drawGrey(App app) {
 
         // 填充按钮方框颜色与背景颜色融合
