@@ -13,6 +13,7 @@ public class Topbar extends App {
 
     private final int mana_info_x = 500;
 
+    private int mana_counter = 60;
     public Topbar() {
 
     }
@@ -25,7 +26,7 @@ public class Topbar extends App {
         app.rect(0, 0, WIDTH, TOPBAR);
 
         
-        int sec = (int) (millis() / 1000);
+        // int sec = (int) (millis() / 1000);
         int startsIn = app.getStartIn();
         
         if(app.next_wave_display<=waves.size())
@@ -46,13 +47,16 @@ public class Topbar extends App {
         app.rect(mana_box_x, mana_box_y, mana_width, mana_height);
 
         // 画动态，这个mana其实是根据config里面的initial_mana初始的，应该可以在app里面计算然后传过来
-        if(current_mana_value<initial_mana) {
-            current_mana_value = initial_mana_gained_per_second * sec;
-        } else {
-            current_mana_value = initial_mana + initial_mana_gained_per_second * sec;
+        // if(current_mana_value<initial_mana) {
+        //     current_mana_value = initial_mana_gained_per_second * sec;
+        // } else {
+        //     current_mana_value = initial_mana + initial_mana_gained_per_second * sec;
+        // }
+        if(mana_counter<=0) {
+            current_mana_value+=initial_mana_gained_per_second;
+            mana_counter=60;
         }
-        
-
+        mana_counter--;
         mana_inner_width = (int)(((double)current_mana_value/(double)initial_mana_cap) * (double)mana_width);
         
         if (current_mana_value <= initial_mana_cap) {

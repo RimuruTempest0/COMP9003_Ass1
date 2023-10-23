@@ -68,17 +68,17 @@ public class Sidebar extends App {
             tower.setTowerWithMouse(app);
             if (tower.valid_place_tower(app)) {
                 tower.setTowerXY((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
-                if (Place_tower_on_map && (current_mana_value >= initial_tower_cost)) {
+                if (Place_tower_on_map ) {
                     MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
-                    // System.out.println(tower_Point.toString());
-                    tower_to_point.put(tower, tower_Point);
-                    point_to_tower.put(tower_Point, tower);
-                    tower_list.add(tower);
-                    tower.mana_subtractor(current_mana_value);
-                    // current_mana_value-=initial_tower_cost;
-                    System.out.println("current_mana_value: "+ current_mana_value);
-                    Place_tower_on_map = !Place_tower_on_map;
-                    Build_tower_condition = !Build_tower_condition;
+                    if((current_mana_value >= initial_tower_cost))
+                    {
+                        tower_to_point.put(tower, tower_Point);
+                        point_to_tower.put(tower_Point, tower);
+                        tower_list.add(tower);
+                        tower.mana_subtractor(initial_tower_cost);
+                        Place_tower_on_map = !Place_tower_on_map;
+                        Build_tower_condition = !Build_tower_condition;
+                    }
                 }
             }
             tower.draw(app);
@@ -89,16 +89,15 @@ public class Sidebar extends App {
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
                 Tower tower = point_to_tower.get(tower_Point);
-                if(Deploy_upgrade) {
+                if(Deploy_range_upgrade) {
                     if(tower.getRangeLevel()<3){
                         tower.upgrade_range();
                         if(rangeCost<30) {rangeCost += 10;}
                         tower.mana_subtractor(tower.getRangeLevel()*10);
-                        // initial_mana -= tower.getRangeLevel()*10;
                     }else{
                         System.out.println("Tower Range Level Max !!!");
                     }
-                    Deploy_upgrade = !Deploy_upgrade;
+                    Deploy_range_upgrade = !Deploy_range_upgrade;
                     Upgrade_range_condition = !Upgrade_range_condition;
                 }
             }
@@ -109,15 +108,15 @@ public class Sidebar extends App {
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
                 Tower tower = point_to_tower.get(tower_Point);
-                if(Deploy_upgrade) {
+                if(Deploy_speed_upgrade) {
                     if(tower.getSpeedLevel()<3){
                         tower.upgrade_speed();
                         if(speedCost<30) {speedCost += 10;}
-                        initial_mana -= tower.getSpeedLevel()*10;
+                        tower.mana_subtractor(tower.getSpeedLevel()*10);
                     }else{
                         System.out.println("Tower Speed Level Max !!!");
                     }
-                    Deploy_upgrade = !Deploy_upgrade;
+                    Deploy_speed_upgrade = !Deploy_speed_upgrade;
                     Upgrade_speed_condition = !Upgrade_speed_condition;
                 }
             }
@@ -128,15 +127,15 @@ public class Sidebar extends App {
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
                 Tower tower = point_to_tower.get(tower_Point);
-                if(Deploy_upgrade) {
+                if(Deploy_damage_upgrade) {
                     if(tower.getDamageLevel()<3){
                         tower.upgrade_damage();
                         if(damageCost<30) {damageCost += 10;}
-                        initial_mana -= tower.getDamageLevel()*10;
+                        tower.mana_subtractor(tower.getDamageLevel()*10);
                     }else{
                         System.out.println("Tower Damage Level Max !!!");
                     }
-                    Deploy_upgrade = !Deploy_upgrade;
+                    Deploy_damage_upgrade = !Deploy_damage_upgrade;
                     Upgrade_damage_condition = !Upgrade_damage_condition;
                 }
             }
@@ -184,17 +183,17 @@ public class Sidebar extends App {
             buildTowerButton.drawCost(app);
         }
 
-        if (upgradeRangeButton.mouse_on_button(app)) {
-            upgradeRangeButton.drawCostValue(app, rangeCost);
-        }
+        // if (upgradeRangeButton.mouse_on_button(app)) {
+        //     upgradeRangeButton.drawCostValue(app, rangeCost);
+        // }
 
-        if (upgradeSpeedButton.mouse_on_button(app)) {
-            upgradeSpeedButton.drawCostValue(app,speedCost);
-        }
+        // if (upgradeSpeedButton.mouse_on_button(app)) {
+        //     upgradeSpeedButton.drawCostValue(app,speedCost);
+        // }
 
-        if (upgradeDamageButton.mouse_on_button(app)) {
-            upgradeDamageButton.drawCostValue(app, damageCost);
-        }
+        // if (upgradeDamageButton.mouse_on_button(app)) {
+        //     upgradeDamageButton.drawCostValue(app, damageCost);
+        // }
 
         if (manaPoolButton.mouse_on_button(app)) {
             manaPoolButton.drawCost(app);

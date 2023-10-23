@@ -535,7 +535,10 @@ public class App extends PApplet {
     public static boolean Upgrade_range_condition = false;
     public static boolean Upgrade_speed_condition = false;
     public static boolean Upgrade_damage_condition = false;
-    public static boolean Deploy_upgrade = false;
+    
+    public static boolean Deploy_range_upgrade = false;
+    public static boolean Deploy_speed_upgrade = false;
+    public static boolean Deploy_damage_upgrade = false;
 
     
 
@@ -569,7 +572,7 @@ public class App extends PApplet {
             if(Sidebar.point_to_tower.containsKey(tower_Point)) {
                 Tower tower = Sidebar.point_to_tower.get(tower_Point);
                 if(tower.mouse_on_tower(this)) {
-                    Deploy_upgrade = !Deploy_upgrade;
+                    Deploy_range_upgrade = !Deploy_range_upgrade;
                 }
             }
         }
@@ -583,7 +586,7 @@ public class App extends PApplet {
             if(Sidebar.point_to_tower.containsKey(tower_Point)) {
                 Tower tower = Sidebar.point_to_tower.get(tower_Point);
                 if(tower.mouse_on_tower(this)) {
-                    Deploy_upgrade = !Deploy_upgrade;
+                    Deploy_speed_upgrade = !Deploy_speed_upgrade;
                 }
             } 
         }
@@ -597,7 +600,7 @@ public class App extends PApplet {
             if(Sidebar.point_to_tower.containsKey(tower_Point)) {
                 Tower tower = Sidebar.point_to_tower.get(tower_Point);
                 if(tower.mouse_on_tower(this)) {
-                    Deploy_upgrade = !Deploy_upgrade;
+                    Deploy_damage_upgrade = !Deploy_damage_upgrade;
                 }
             } 
         }

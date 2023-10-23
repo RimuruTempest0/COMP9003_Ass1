@@ -23,6 +23,21 @@ public class Tower extends App {
     
     private PImage sprite;
 
+    public Tower(double initial_tower_range, double initial_tower_firing_speed,
+            int initial_tower_damage, int initial_tower_cost) {
+
+        this.initial_tower_range = initial_tower_range;
+        this.initial_tower_firing_speed = initial_tower_firing_speed;
+        this.tower_damage = initial_tower_damage;
+        this.range_level = 0;
+        this.speed_level = 0;
+        this.damage_level = 0;
+        this.upgrade_count = 0;
+        this.tower_cost = initial_tower_cost;
+
+    }
+
+
     public void mana_subtractor(int subtract_Cost) {
         if ((current_mana_value-subtract_Cost) < 0) {
             System.out.println("Insufficient Mana !!!");
@@ -41,19 +56,7 @@ public class Tower extends App {
         return this.tower_cost;
     }
 
-    public Tower(double initial_tower_range, double initial_tower_firing_speed,
-            int initial_tower_damage, int initial_tower_cost) {
-
-        this.initial_tower_range = initial_tower_range;
-        this.initial_tower_firing_speed = initial_tower_firing_speed;
-        this.tower_damage = initial_tower_damage;
-        this.range_level = 0;
-        this.speed_level = 0;
-        this.damage_level = 0;
-        this.upgrade_count = 0;
-        this.tower_cost = initial_tower_cost;
-
-    }
+    
 
     public int get_X() {
         return this.tower_x;
@@ -93,7 +96,6 @@ public class Tower extends App {
         return this.range_level;
     }
     
-
     public void upgrade_speed() {
         this.initial_tower_firing_speed += 0.5;
         this.speed_level++;
