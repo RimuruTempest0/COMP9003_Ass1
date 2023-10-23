@@ -46,8 +46,15 @@ public class Topbar extends App {
         app.rect(mana_box_x, mana_box_y, mana_width, mana_height);
 
         // 画动态，这个mana其实是根据config里面的initial_mana初始的，应该可以在app里面计算然后传过来
-        current_mana_value = initial_mana + initial_mana_gained_per_second * sec;
+        if(current_mana_value<initial_mana) {
+            current_mana_value = initial_mana_gained_per_second * sec;
+        } else {
+            current_mana_value = initial_mana + initial_mana_gained_per_second * sec;
+        }
+        
+
         mana_inner_width = (int)(((double)current_mana_value/(double)initial_mana_cap) * (double)mana_width);
+        
         if (current_mana_value <= initial_mana_cap) {
             app.fill(171, 219, 227);
             app.rect(mana_box_x, mana_box_y, mana_inner_width, mana_height);

@@ -68,14 +68,15 @@ public class Sidebar extends App {
             tower.setTowerWithMouse(app);
             if (tower.valid_place_tower(app)) {
                 tower.setTowerXY((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
-                if (Place_tower_on_map && (initial_mana > 0)) {
+                if (Place_tower_on_map && (current_mana_value >= initial_tower_cost)) {
                     MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
                     // System.out.println(tower_Point.toString());
                     tower_to_point.put(tower, tower_Point);
                     point_to_tower.put(tower_Point, tower);
                     tower_list.add(tower);
-
-                    initial_mana-=initial_tower_cost;
+                    tower.mana_subtractor(current_mana_value);
+                    // current_mana_value-=initial_tower_cost;
+                    System.out.println("current_mana_value: "+ current_mana_value);
                     Place_tower_on_map = !Place_tower_on_map;
                     Build_tower_condition = !Build_tower_condition;
                 }
@@ -92,7 +93,8 @@ public class Sidebar extends App {
                     if(tower.getRangeLevel()<3){
                         tower.upgrade_range();
                         if(rangeCost<30) {rangeCost += 10;}
-                        initial_mana -= tower.getRangeLevel()*10;
+                        tower.mana_subtractor(tower.getRangeLevel()*10);
+                        // initial_mana -= tower.getRangeLevel()*10;
                     }else{
                         System.out.println("Tower Range Level Max !!!");
                     }

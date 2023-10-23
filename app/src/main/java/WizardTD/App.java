@@ -461,6 +461,7 @@ public class App extends PApplet {
         initial_mana_gained_per_second = gameJson.getInt("initial_mana_gained_per_second");
         initial_mana_cap = gameJson.getInt("initial_mana_cap");
 
+        current_mana_value = initial_mana;
         // 读取wave内容
         waves = gameJson.getJSONArray("waves");
 

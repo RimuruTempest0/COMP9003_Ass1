@@ -23,6 +23,14 @@ public class Tower extends App {
     
     private PImage sprite;
 
+    public void mana_subtractor(int subtract_Cost) {
+        if ((current_mana_value-subtract_Cost) < 0) {
+            System.out.println("Insufficient Mana !!!");
+        }else {
+            current_mana_value-=subtract_Cost;
+        }
+    }
+    
     public void set_tower_cost(int cost)
     {
         this.tower_cost = cost;
