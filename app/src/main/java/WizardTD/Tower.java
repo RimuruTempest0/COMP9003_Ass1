@@ -1,5 +1,7 @@
 package WizardTD;
 
+import java.util.List;
+
 import processing.core.PImage;
 
 public class Tower extends App {
@@ -20,8 +22,9 @@ public class Tower extends App {
     private int tower_cost;
     // private int range_cost;
     // private int speed_cost;
-    
-    private PImage sprite;
+
+    private PImage tower_sprite;
+    private Bullet bullet;
 
     public Tower(double initial_tower_range, double initial_tower_firing_speed,
             int initial_tower_damage, int initial_tower_cost) {
@@ -34,29 +37,26 @@ public class Tower extends App {
         this.damage_level = 0;
         this.upgrade_count = 0;
         this.tower_cost = initial_tower_cost;
+        this.bullet = new Bullet(0, 0, bullet_image);
+        
 
     }
-
 
     public void mana_subtractor(int subtract_Cost) {
-        if ((current_mana_value-subtract_Cost) < 0) {
+        if ((current_mana_value - subtract_Cost) < 0) {
             System.out.println("Insufficient Mana !!!");
-        }else {
-            current_mana_value-=subtract_Cost;
+        } else {
+            current_mana_value -= subtract_Cost;
         }
     }
-    
-    public void set_tower_cost(int cost)
-    {
+
+    public void set_tower_cost(int cost) {
         this.tower_cost = cost;
     }
 
-    public int get_tower_cost()
-    {
+    public int get_tower_cost() {
         return this.tower_cost;
     }
-
-    
 
     public int get_X() {
         return this.tower_x;
@@ -67,7 +67,7 @@ public class Tower extends App {
     }
 
     public void setTowerImage(PImage sprite) {
-        this.sprite = sprite;
+        this.tower_sprite = sprite;
     }
 
     public void setTowerXY(int tower_x, int tower_y) {
@@ -92,16 +92,18 @@ public class Tower extends App {
         // this.range_cost += 10;
         upgrade_cost();
     }
+
     public int getRangeLevel() {
         return this.range_level;
     }
-    
+
     public void upgrade_speed() {
         this.initial_tower_firing_speed += 0.5;
         this.speed_level++;
         // this.speed_cost += 10;
         upgrade_cost();
     }
+
     public int getSpeedLevel() {
         return this.speed_level;
     }
@@ -111,6 +113,7 @@ public class Tower extends App {
         this.damage_level++;
         upgrade_cost();
     }
+
     public int getDamageLevel() {
         return this.damage_level;
     }
@@ -119,7 +122,7 @@ public class Tower extends App {
         app.fill(243, 10, 169);
         app.textSize(10);
         for (int i = 0; i < level; i++) {
-            app.text("O", this.tower_x + (i * 10), this.tower_y+5);
+            app.text("O", this.tower_x + (i * 10), this.tower_y + 5);
         }
     }
 
@@ -127,7 +130,7 @@ public class Tower extends App {
         app.fill(243, 10, 169);
         app.textSize(10);
         for (int i = 0; i < level; i++) {
-            app.text("X", this.tower_x + (i * 10), this.tower_y + this.sprite.height);
+            app.text("X", this.tower_x + (i * 10), this.tower_y + this.tower_sprite.height);
         }
     }
 
@@ -143,17 +146,18 @@ public class Tower extends App {
         app.noFill(); // 不填充颜色
         app.stroke(10, 240, 60); // 设置边框颜色为蓝色
         app.strokeWeight(1);
-        app.ellipse((float) (this.tower_x + this.sprite.width / 2), (float) (this.tower_y + this.sprite.height / 2),
+        app.ellipse((float) (this.tower_x + this.tower_sprite.width / 2),
+                (float) (this.tower_y + this.tower_sprite.height / 2),
                 (float) this.initial_tower_range, (float) this.initial_tower_range);
     }
 
     public boolean mouse_on_tower(App app) {
         int mouse_X = app.mouseX;
         int mouse_Y = app.mouseY;
-        if (mouse_X <= this.tower_x + this.sprite.width &&
+        if (mouse_X <= this.tower_x + this.tower_sprite.width &&
                 mouse_X >= this.tower_x &&
                 mouse_Y >= this.tower_y &&
-                mouse_Y <= this.tower_y + this.sprite.height) {
+                mouse_Y <= this.tower_y + this.tower_sprite.height) {
             return true;
 
         }
@@ -168,10 +172,37 @@ public class Tower extends App {
                 if (Map_Grid[tower_grid_x][tower_grid_y] == ' ') {
                     return true;
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {}
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
         }
         return false;
     }
+
+    public Gremlin getClosestMonsterInRange(List<Gremlin> gremlinList) {
+        Gremlin closestMonster = null;
+        double closestDistance = Double.MAX_VALUE;
+
+        for (Gremlin m : gremlinList) {
+            // 获取塔和怪物的位置
+            int towerX = this.tower_x;
+            int towerY = this.tower_y;
+            int monsterX = m.monster_x;
+            int monsterY = m.monster_y;
+
+            // 计算塔和怪物之间的距离
+            double distance = Math.sqrt(Math.pow(monsterX - towerX, 2) + Math.pow(monsterY - towerY, 2));
+
+            // 如果怪物在塔的射程内并且距离比当前找到的距离更近，那么更新最近的怪物和距离
+            if (distance <= this.initial_tower_range && distance < closestDistance) {
+                closestMonster = m;
+                closestDistance = distance;
+            }
+        }
+
+        return closestMonster;
+    }
+
+   
 
     public void draw(App app) {
 
@@ -179,6 +210,20 @@ public class Tower extends App {
             draw_range(app);
         }
 
-        app.image(this.sprite, this.tower_x, this.tower_y);
+        app.image(this.tower_sprite, this.tower_x, this.tower_y);
+        // bullet = new Bullet(this.tower_x, this.tower_y, bullet_image);
+        int tower_width = this.tower_sprite.width;
+        int tower_height = this.tower_sprite.height;
+
+        
+        
+        Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
+        if (closestGremlin != null) {
+            // System.out.println(closestMonster.monster_x + " "+closestMonster.monster_y);
+            bullet.moveToMonster(closestGremlin, this.tower_x+ 13, this.tower_y+ 13);
+        }
+
+        bullet.draw(app);
+
     }
 }

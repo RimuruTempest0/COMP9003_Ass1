@@ -51,7 +51,6 @@ public class Sidebar extends App {
         if (Pause_press_condition) 
         {
             pauseButton.drawYellow(app);
-            
         }
 
             //------------------------------Tower Draw START---------------------------------
@@ -141,7 +140,8 @@ public class Sidebar extends App {
                 int x = tower_to_point.get(tower).getX();
                 int y = tower_to_point.get(tower).getY();
                 // MyPoint curTowerTpoint = new MyPoint(x, y);
-
+                
+                
                 if(tower.getDamageLevel() >= 2 && tower.getRangeLevel() >= 2 && tower.getSpeedLevel() >= 2)
                 {
                     tower.setTowerImage(tower_2_image);

@@ -5,20 +5,26 @@ import java.util.HashMap;
 import processing.core.PImage;
 
 public class Gremlin extends Monster {
-    
+
     public boolean animation_start;
     public int current_frame = 0;
     public int number_frames = 5;
+    private int life_bar_width = 20;
     MyPoint spawn_p;
 
-    public Gremlin(int monster_x, int monster_y, double speed, boolean isAlive, boolean animation_start, PImage sprite) {
+    public Gremlin(int monster_x, int monster_y, double speed, boolean isAlive, boolean animation_start,
+            PImage sprite) {
         super(monster_x, monster_y, speed, isAlive, sprite);
         this.animation_start = animation_start;
-        spawn_p = new MyPoint(((monster_y-6-TOPBAR)/CELLSIZE),(monster_x-6)/CELLSIZE);
+        spawn_p = new MyPoint(((monster_y - 6 - TOPBAR) / CELLSIZE), (monster_x - 6) / CELLSIZE);
     }
 
     private double current_speed = this.speed;
 
+    public void set_gremlin_XY (int x, int y){
+        this.monster_x = x;
+        this.monster_y = y;
+    }
     public void drawGremlinDeath(int x, int y, App app) {
         double speed = (double) number_frames / (double) FPS;
         if (current_frame == gremlin_dead.length - 1) {
@@ -33,12 +39,11 @@ public class Gremlin extends Monster {
         }
     }
 
-    public void setSpawnPosition(int x, int y)
-    {
+    public void setSpawnPosition(int x, int y) {
         this.monster_x = x;
         this.monster_y = y;
     }
-    
+
     public void resume_speed() {
         current_speed = this.speed;
     }
@@ -48,77 +53,99 @@ public class Gremlin extends Monster {
         current_speed += current_speed;
     }
 
-    
-
+    public void hitted(){
+        life_bar_width-=4;
+    }
     MyPoint next_point = new MyPoint();
     // 每个Monster存储对应的路线迭代index
     HashMap<MyPoint, Integer> indexMap = new HashMap<>();
+
     public void tick() {
         // TODO 这里写死亡状态检测
-        if (this.monster_x == wizard_house_y*CELLSIZE + 6 && this.monster_y == wizard_house_x*CELLSIZE+TOPBAR+6) {
+        if (this.monster_x == wizard_house_y * CELLSIZE + 6
+                && this.monster_y == wizard_house_x * CELLSIZE + TOPBAR + 6 || life_bar_width<=0) {
             this.isAlive = false;
             this.animation_start = true;
         } else {
             // 判断上下左右走，用当前Point.get(x,y)于下一个Point.get(x,y)判断
             // 判断下一个Point的x还是y相等，然后判断x y的大小
-            for(int x=0; x<startPoints.size(); x++){
+            for (int x = 0; x < startPoints.size(); x++) {
                 MyPoint spawn = startPoints.get(x);
-                if(!indexMap.containsKey(spawn)){
+                if (!indexMap.containsKey(spawn)) {
                     indexMap.put(spawn, 1);
                 }
             }
             int shortest_index = indexMap.get(spawn_p);
             next_point = shortest_Paths.get(spawn_p).get(shortest_index);
-            
+
             // Move Right
-            if(this.monster_x < next_point.getY()*CELLSIZE + 6)
-            {
+            if (this.monster_x < next_point.getY() * CELLSIZE + 6) {
                 this.monster_x += current_speed;
-                if(this.monster_x >= next_point.getY()*CELLSIZE + 6){
-                    this.monster_x = next_point.getY()*CELLSIZE + 6;
+                if (this.monster_x >= next_point.getY() * CELLSIZE + 6) {
+                    this.monster_x = next_point.getY() * CELLSIZE + 6;
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
                 }
             }
 
             // Move Left
-            if(this.monster_x > next_point.getY()*CELLSIZE + 6)
-            {
+            if (this.monster_x > next_point.getY() * CELLSIZE + 6) {
                 this.monster_x -= current_speed;
-                if(this.monster_x <= next_point.getY()*CELLSIZE + 6){
-                    this.monster_x = next_point.getY()*CELLSIZE + 6;
+                if (this.monster_x <= next_point.getY() * CELLSIZE + 6) {
+                    this.monster_x = next_point.getY() * CELLSIZE + 6;
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
                 }
             }
 
-
             // Move Down
-            if(this.monster_y < next_point.getX()*CELLSIZE+ TOPBAR + 6)
-            {
+            if (this.monster_y < next_point.getX() * CELLSIZE + TOPBAR + 6) {
                 this.monster_y += current_speed;
-                if(this.monster_y >= next_point.getX()*CELLSIZE+ TOPBAR+6){
-                    this.monster_y = next_point.getX()*CELLSIZE+ TOPBAR+6;
+                if (this.monster_y >= next_point.getX() * CELLSIZE + TOPBAR + 6) {
+                    this.monster_y = next_point.getX() * CELLSIZE + TOPBAR + 6;
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
                 }
             }
 
             // Move Up
-            if(this.monster_y > next_point.getX()*CELLSIZE+ TOPBAR + 6)
-            {
+            if (this.monster_y > next_point.getX() * CELLSIZE + TOPBAR + 6) {
                 this.monster_y -= current_speed;
-                if(this.monster_y <= next_point.getX()*CELLSIZE+ TOPBAR+6){
-                    this.monster_y = next_point.getX()*CELLSIZE+ TOPBAR+6;
+                if (this.monster_y <= next_point.getX() * CELLSIZE + TOPBAR + 6) {
+                    this.monster_y = next_point.getX() * CELLSIZE + TOPBAR + 6;
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
+                }
+            }
+
+            // Double the monster speed
+            if (FF_press_condition) {
+                /*
+                 * 人物运动加速
+                 * wave倒计时加速
+                 * mana条加速
+                 */
+                for (Gremlin g : gremlinList) {
+                    g.FF_speed();
+                }
+
+            } else {
+                for (Gremlin g : gremlinList) {
+                    g.resume_speed();
                 }
             }
         }
     }
 
-    public void draw(App app)
-     {
+    public int get_sprite_width(){
+        return this.sprite.width;
+    }
+
+    public int get_sprite_height(){
+        return this.sprite.height;
+    }
+
+    public void draw(App app) {
 
         /*
          * 要想让monster在path上走，
@@ -130,17 +157,19 @@ public class Gremlin extends Monster {
             app.noFill();
             app.stroke(255, 0, 0); // 设置边框颜色为红色
             app.strokeWeight(2);
-            app.rect(this.monster_x, this.monster_y-10, 20, 3);
+            app.rect(this.monster_x, this.monster_y - 10, 20, 3);
 
             // Gremlin green life bar
             app.noFill();
             app.stroke(10, 240, 60); // 设置边框颜色为绿色
             app.strokeWeight(2);
-            app.rect(this.monster_x, this.monster_y-10, 20, 3);
+            app.rect(this.monster_x, this.monster_y - 10, life_bar_width, 3);
 
             app.image(this.sprite, this.monster_x, this.monster_y);
-        } else {      
+        } else {
+
             drawGremlinDeath(monster_x, monster_y, app);
+            
         }
 
     }

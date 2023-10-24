@@ -339,6 +339,7 @@ public class App extends PApplet {
     protected static PImage tower_0_image;
     protected static PImage tower_1_image;
     protected static PImage tower_2_image;
+    protected static PImage bullet_image;
     private HashMap<Integer, PImage> tower_image_map = new HashMap<>();
 
     public static PImage[] gremlin_dead = new PImage[5];
@@ -500,6 +501,8 @@ public class App extends PApplet {
         tower_image_map.put(0, tower_0_image);
         tower_image_map.put(1, tower_1_image);
         tower_image_map.put(2, tower_2_image);
+
+        bullet_image = this.loadImage("src/main/resources/WizardTD/fireball.png");
 
     }
 
@@ -774,23 +777,13 @@ public class App extends PApplet {
 
         // 在wave_change()里，每次wave更变，处理monster的更变
         wave_change();
-        if (FF_press_condition) {
-            /*
-             * 人物运动加速
-             * wave倒计时加速
-             * mana条加速
-             */
-            for (Gremlin m : gremlinList) {
-                m.FF_speed();
-            }
-
-        } else {
-            for (Gremlin m : gremlinList) {
-                m.resume_speed();
-            }
-        }
+        
 
         for (Gremlin m : gremlinList) {
+            if(!m.isAlive){
+                // TODO 这里需要思考怎么把死亡的Monster移除
+                // gremlinList.remove(m);
+            }
             m.tick();
             m.draw(this);
         }
