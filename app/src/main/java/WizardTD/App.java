@@ -525,8 +525,7 @@ public class App extends PApplet {
     public void keyReleased() {
 
     }
-    
-    
+
     public static boolean FF_press_condition = false;
     public static boolean Pause_press_condition = false;
     public static boolean Build_tower_condition = false;
@@ -535,12 +534,10 @@ public class App extends PApplet {
     public static boolean Upgrade_range_condition = false;
     public static boolean Upgrade_speed_condition = false;
     public static boolean Upgrade_damage_condition = false;
-    
+
     public static boolean Deploy_range_upgrade = false;
     public static boolean Deploy_speed_upgrade = false;
     public static boolean Deploy_damage_upgrade = false;
-
-    
 
     public static String mouse_on_which_button;
 
@@ -567,11 +564,11 @@ public class App extends PApplet {
             Upgrade_range_condition = !Upgrade_range_condition;
         }
 
-        if(Upgrade_range_condition) {
+        if (Upgrade_range_condition) {
             MyPoint tower_Point = new MyPoint((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
-            if(Sidebar.point_to_tower.containsKey(tower_Point)) {
+            if (Sidebar.point_to_tower.containsKey(tower_Point)) {
                 Tower tower = Sidebar.point_to_tower.get(tower_Point);
-                if(tower.mouse_on_tower(this)) {
+                if (tower.mouse_on_tower(this)) {
                     Deploy_range_upgrade = !Deploy_range_upgrade;
                 }
             }
@@ -581,31 +578,29 @@ public class App extends PApplet {
             Upgrade_speed_condition = !Upgrade_speed_condition;
         }
 
-        if(Upgrade_speed_condition) {
+        if (Upgrade_speed_condition) {
             MyPoint tower_Point = new MyPoint((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
-            if(Sidebar.point_to_tower.containsKey(tower_Point)) {
+            if (Sidebar.point_to_tower.containsKey(tower_Point)) {
                 Tower tower = Sidebar.point_to_tower.get(tower_Point);
-                if(tower.mouse_on_tower(this)) {
+                if (tower.mouse_on_tower(this)) {
                     Deploy_speed_upgrade = !Deploy_speed_upgrade;
                 }
-            } 
+            }
         }
 
         if (Sidebar.upgradeDamageButton.mouse_on_button(this)) {
             Upgrade_damage_condition = !Upgrade_damage_condition;
         }
 
-        if(Upgrade_damage_condition) {
+        if (Upgrade_damage_condition) {
             MyPoint tower_Point = new MyPoint((mouseX / 32) * 32, ((mouseY / 32) * 32) - 32 + TOPBAR);
-            if(Sidebar.point_to_tower.containsKey(tower_Point)) {
+            if (Sidebar.point_to_tower.containsKey(tower_Point)) {
                 Tower tower = Sidebar.point_to_tower.get(tower_Point);
-                if(tower.mouse_on_tower(this)) {
+                if (tower.mouse_on_tower(this)) {
                     Deploy_damage_upgrade = !Deploy_damage_upgrade;
                 }
-            } 
+            }
         }
-
-
 
     }
 
@@ -629,7 +624,7 @@ public class App extends PApplet {
     public static double wave_duration;
     public static double pre_wave_pause;
 
-    private ArrayList<Monster> monsterList = new ArrayList<>();
+    public static ArrayList<Gremlin> gremlinList = new ArrayList<>();
     private ArrayList<ArrayList<Monster>> big_monsterList = new ArrayList<>();
 
     public static String monster_type;
@@ -751,7 +746,7 @@ public class App extends PApplet {
      */
     public static MyPoint spawn_point;
     // private Tower tower;
-    
+
     @Override
     public void draw() {
         background(background_R, background_G, background_B);
@@ -765,11 +760,25 @@ public class App extends PApplet {
             }
         }
 
-        
         // 在wave_change()里，每次wave更变，处理monster的更变
         wave_change();
+        if (FF_press_condition) {
+            /*
+             * 人物运动加速
+             * wave倒计时加速
+             * mana条加速
+             */
+            for (Gremlin m : gremlinList) {
+                m.FF_speed();
+            }
 
-        for (Monster m : monsterList) {
+        } else {
+            for (Gremlin m : gremlinList) {
+                m.resume_speed();
+            }
+        }
+
+        for (Gremlin m : gremlinList) {
             m.tick();
             m.draw(this);
         }
@@ -785,7 +794,7 @@ public class App extends PApplet {
         if (monster_info_map.containsKey(current_wave)) {
             double speed = (double) (monster_info_map.get(current_wave).get(2));
             if (this.Monster_timer < 0 && monster_count != 0) {
-                monsterList.add(new Gremlin(spawn_point.getY() * CELLSIZE + gremlin_adjust,
+                gremlinList.add(new Gremlin(spawn_point.getY() * CELLSIZE + gremlin_adjust,
                         spawn_point.getX() * CELLSIZE + TOPBAR + gremlin_adjust, speed, true, false,
                         this.gremlin_image));
                 monster_count--;

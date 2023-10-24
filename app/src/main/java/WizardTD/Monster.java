@@ -30,6 +30,8 @@ public abstract class Monster extends App {
         return this.monster_y;
     }
 
+    
+
     public abstract void tick();
    
     public abstract void draw(App app);

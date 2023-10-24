@@ -17,7 +17,7 @@ public class Gremlin extends Monster {
         spawn_p = new MyPoint(((monster_y-6-TOPBAR)/CELLSIZE),(monster_x-6)/CELLSIZE);
     }
 
-    
+    private double current_speed = this.speed;
 
     public void drawGremlinDeath(int x, int y, App app) {
         double speed = (double) number_frames / (double) FPS;
@@ -39,6 +39,17 @@ public class Gremlin extends Monster {
         this.monster_y = y;
     }
     
+    public void resume_speed() {
+        current_speed = this.speed;
+    }
+
+    public void FF_speed() {
+        resume_speed();
+        current_speed += current_speed;
+    }
+
+    
+
     MyPoint next_point = new MyPoint();
     // 每个Monster存储对应的路线迭代index
     HashMap<MyPoint, Integer> indexMap = new HashMap<>();
@@ -62,8 +73,9 @@ public class Gremlin extends Monster {
             // Move Right
             if(this.monster_x < next_point.getY()*CELLSIZE + 6)
             {
-                this.monster_x += this.speed;
-                if(this.monster_x == next_point.getY()*CELLSIZE + 6){
+                this.monster_x += current_speed;
+                if(this.monster_x >= next_point.getY()*CELLSIZE + 6){
+                    this.monster_x = next_point.getY()*CELLSIZE + 6;
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
                 }
@@ -72,8 +84,9 @@ public class Gremlin extends Monster {
             // Move Left
             if(this.monster_x > next_point.getY()*CELLSIZE + 6)
             {
-                this.monster_x -= this.speed;
-                if(this.monster_x == next_point.getY()*CELLSIZE + 6){
+                this.monster_x -= current_speed;
+                if(this.monster_x <= next_point.getY()*CELLSIZE + 6){
+                    this.monster_x = next_point.getY()*CELLSIZE + 6;
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
                 }
@@ -83,8 +96,9 @@ public class Gremlin extends Monster {
             // Move Down
             if(this.monster_y < next_point.getX()*CELLSIZE+ TOPBAR + 6)
             {
-                this.monster_y += this.speed;
-                if(this.monster_y == next_point.getX()*CELLSIZE+ TOPBAR+6){
+                this.monster_y += current_speed;
+                if(this.monster_y >= next_point.getX()*CELLSIZE+ TOPBAR+6){
+                    this.monster_y = next_point.getX()*CELLSIZE+ TOPBAR+6;
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
                 }
@@ -93,8 +107,9 @@ public class Gremlin extends Monster {
             // Move Up
             if(this.monster_y > next_point.getX()*CELLSIZE+ TOPBAR + 6)
             {
-                this.monster_y -= this.speed;
-                if(this.monster_y == next_point.getX()*CELLSIZE+ TOPBAR+6){
+                this.monster_y -= current_speed;
+                if(this.monster_y <= next_point.getX()*CELLSIZE+ TOPBAR+6){
+                    this.monster_y = next_point.getX()*CELLSIZE+ TOPBAR+6;
                     shortest_index++;
                     indexMap.put(spawn_p, shortest_index);
                 }

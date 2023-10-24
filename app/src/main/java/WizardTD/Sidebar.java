@@ -45,11 +45,6 @@ public class Sidebar extends App {
         // 当鼠标在按钮上，按下mousePressed后，变为黄色
         if (FF_press_condition) 
         {
-            /*
-             * 人物运动加速
-             * wave倒计时加速
-             * mana条加速
-             */
             ffButton.drawYellow(app);
         }
 
