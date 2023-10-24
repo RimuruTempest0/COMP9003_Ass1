@@ -675,7 +675,19 @@ public class App extends PApplet {
         }
 
         // 计算 startsIn 时间
-        int sec = (int) ((millis() - startTime) / 1000.0); // 从 startTime 以来经过的秒数
+        int counter_speed = 1000;
+        int sec = 0; // 从 startTime 以来经过的秒数
+        // TODO 倒计时无法衔接起来
+        if (FF_press_condition) {
+            counter_speed = 500;
+            sec = (int) ((millis() - startTime) / counter_speed);
+        } else {
+           counter_speed = 1000;
+           sec = (int) ((millis() - startTime) / counter_speed);
+        }
+        
+        
+        
         startsIn = (int) (next_wave_pause - sec); // 计算倒计时
         if (startsIn <= 0) {
             // 重置 startTime

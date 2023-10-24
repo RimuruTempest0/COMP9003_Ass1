@@ -17,6 +17,9 @@ public class Topbar extends App {
     public Topbar() {
 
     }
+    public void mana_counter_sub(int sub_value) {
+        mana_counter-= sub_value;
+    }
     public void draw(App app) {
         
         
@@ -33,7 +36,7 @@ public class Topbar extends App {
         {
             app.textSize(20);
             app.fill(0);
-            app.text("Wave: " + app.next_wave_display+ " Starts: " + startsIn, 0, text_y);
+            app.text("Wave: " + app.next_wave_display+ " Starts In: " + startsIn, 0, text_y);
         }
         
 
@@ -56,7 +59,14 @@ public class Topbar extends App {
             current_mana_value+=initial_mana_gained_per_second;
             mana_counter=60;
         }
-        mana_counter--;
+        if (FF_press_condition) {
+            mana_counter_sub(2);
+
+        } else {
+            mana_counter_sub(1);
+        }
+        
+
         mana_inner_width = (int)(((double)current_mana_value/(double)initial_mana_cap) * (double)mana_width);
         
         if (current_mana_value <= initial_mana_cap) {
