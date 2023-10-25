@@ -24,6 +24,10 @@ public class Bullet extends App{
         return this.bullet_y;
     }
 
+    public double getDamage() {
+        return this.bullet_damage;
+    }
+
     public void setBulletXY(int x, int y){
         this.bullet_x = x;
         this.bullet_y = y;

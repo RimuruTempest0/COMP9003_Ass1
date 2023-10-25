@@ -45,37 +45,32 @@ public class App extends PApplet {
     private Sidebar sidebar;
 
     public static HashMap<MyPoint, ArrayList<MyPoint>> shortest_Paths = new HashMap<>();
-
-    // public static ArrayList<ArrayList<MyPoint>> shortest_Paths = new
-    // ArrayList<>();
     public static ArrayList<MyPoint> startPoints = new ArrayList<>();
 
-    // Feel free to add any additional methods or attributes you want. Please put
-    // classes in different files.
 
-    // 读取level文件并存储进20x20的数组
-    public char[][] readLevel(String fileAddress) {
+    /**
+     * Read the layout object from json file and store data in a 2D char array
+     * @param levelAddress levelx.txt file address
+     * @return A 20x20 2D char array which store the level characters
+     */
+    public char[][] readLevel(String levelAddress) {
         char[][] data = new char[20][20];
 
-        // 先全部填充Grass
+        // Fill the array with grass
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 20; j++) {
                 data[i][j] = ' ';
             }
         }
-
         try {
-            File file = new File(fileAddress);
+            File file = new File(levelAddress);
             Scanner sc = new Scanner(file);
-
-            // System.out.println(row);
             for (int x = 0; x < 20; x++) {
                 String row = sc.nextLine();
                 for (int y = 0; y < row.length(); y++) {
                     data[x][y] = row.charAt(y);
                 }
             }
-
             sc.close();
             return data;
 
@@ -86,24 +81,26 @@ public class App extends PApplet {
 
     }
 
-    // 选择path的方向,在loadBackGround()中使用
+    /**
+     * Method to choose right direction of path tile 
+     * This method is called in loadBackGround(char[][] backGroundArray) method
+     * @param x current tile x
+     * @param y current tile y
+     * @param backGroundArray 2D map grid char array
+     * @return corresponding direction tile code
+     */
     public int choosePath(int x, int y, char[][] backGroundArray) {
         int upX = x - 1;
         int downX = x + 1;
         int leftY = y - 1;
         int rightY = y + 1;
 
-        // int upY = y - 1;
-        // int downY = y + 1;
-        // int leftX = x - 1;
-        // int rightX = x + 1;
-
         char up = ' ';
         char down = ' ';
         char left = ' ';
         char right = ' ';
 
-        // 以下四个try catch分别捕捉上下左右四个异常并处理,如无异常，正常赋值
+        // The following try catch detects the boundary
         try {
             up = backGroundArray[upX][y];
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -134,31 +131,6 @@ public class App extends PApplet {
             right = 'X';
         }
 
-        // try {
-        // up = backGroundArray[x][upY];
-        // } catch (ArrayIndexOutOfBoundsException e) {
-        // System.out.println("上边界出界: " + x + " " + upY);
-        // up = 'X';
-        // }
-        // try {
-        // down = backGroundArray[x][downY];
-        // } catch (ArrayIndexOutOfBoundsException e) {
-        // System.out.println("下边界出界： " + x + " " + downY);
-        // down = 'X';
-
-        // }
-        // try {
-        // left = backGroundArray[leftX][y];
-        // } catch (ArrayIndexOutOfBoundsException e) {
-        // System.out.println("左边界出界: " + leftX + " " + y);
-        // left = 'X';
-        // }
-        // try {
-        // right = backGroundArray[rightX][y];
-        // } catch (ArrayIndexOutOfBoundsException e) {
-        // System.out.println("右边界出界： " + rightX + " " + y);
-        // right = 'X';
-        // }
 
         // 计算上下左右总值
         int fourValue = (int) up + (int) down + (int) left + (int) right;
@@ -208,7 +180,10 @@ public class App extends PApplet {
         return 0;
     }
 
-    // 将背景图片正确load入
+    /**
+     * Replace the corresponding character with PImage into a PIamge map 2D array
+     * @param backGroundArray the 2D array store the levelx.txt data
+     */
     public void loadBackGround(char[][] backGroundArray) {
         PImage grass = loadImage("src/main/resources/WizardTD/grass.png");
         PImage shrub = loadImage("src/main/resources/WizardTD/shrub.png");
@@ -240,7 +215,6 @@ public class App extends PApplet {
                         break;
                     case 'X':
                         int pathNum = choosePath(i, j, backGroundArray);
-                        // int pathNum = choosePath(j, i, backGroundArray);
                         switch (pathNum) {
                             case 0:
                                 mapTile[i][j] = path0;
@@ -278,10 +252,11 @@ public class App extends PApplet {
                         }
                         break;
                     case 'W':
-                        // 先把草画在W的地方，存储坐标，在坐标上层画wizard house
+                        // Draw the grass at the 'W' place and store the position
                         mapTile[i][j] = loadImage("src/main/resources/WizardTD/grass.png");
                         wizard_house_x = i;
                         wizard_house_y = j;
+                        // Adjust the wizard house entrence with face to the path tile
                         if (backGroundArray[i - 1][j] == 'X') {
                             wizardImage = rotateImageByDegrees(wizardImage, 90);
                             wizard_house_display_x = i * 32 + 40;
@@ -297,8 +272,6 @@ public class App extends PApplet {
                             wizard_house_display_x = i * 32 + 40;
                             wizard_house_display_y = j * 32 - 8;
                         }
-                        // wizard_house_display_x = i * 32 + 40 - 8;
-                        // wizard_house_y = j * 32;
                         break;
                 }
             }
@@ -307,7 +280,6 @@ public class App extends PApplet {
 
     public App() {
         this.configPath = "config.json";
-
     }
 
     /**
@@ -506,29 +478,6 @@ public class App extends PApplet {
 
     }
 
-    /**
-     * s
-     * Receive key pressed signal from the keyboard.
-     */
-    @Override
-    public void keyPressed() {
-        // if (key == 'p' || key == 'P') {
-        // if (isLooping()) {
-        // noLoop();
-        // } else {
-        // loop();
-        // }
-        // }
-    }
-
-    /**
-     * Receive key released signal from the keyboard.
-     */
-    @Override
-    public void keyReleased() {
-
-    }
-
     public static boolean FF_press_condition = false;
     public static boolean Pause_press_condition = false;
     public static boolean Build_tower_condition = false;
@@ -544,9 +493,52 @@ public class App extends PApplet {
 
     public static String mouse_on_which_button;
 
+    /**
+     * s
+     * Receive key pressed signal from the keyboard.
+     */
+    @Override
+    public void keyPressed() {
+        if (key == 'f' || key == 'F') {
+            FF_press_condition = !FF_press_condition;
+        }
+
+        if (key == 'p' || key == 'P') {
+            Pause_press_condition = !Pause_press_condition;
+        }
+        
+        if (key == 't' || key == 'T') {
+            Build_tower_condition = !Build_tower_condition;
+        }
+
+        if (key == '1') {
+            Upgrade_range_condition = !Upgrade_range_condition;
+        }
+
+        if (key == '2') {
+            Upgrade_speed_condition = !Upgrade_speed_condition;
+        }
+
+        if (key == '3') {
+            Upgrade_damage_condition = !Upgrade_damage_condition;
+        }
+
+        
+        
+    }
+
+    /**
+     * Receive key released signal from the keyboard.
+     */
+    @Override
+    public void keyReleased() {
+
+    }
+
+    
+
     @Override
     public void mousePressed(MouseEvent e) {
-        // initial_mana_cap += 250;
         if (Sidebar.ffButton.mouse_on_button(this)) {
             FF_press_condition = !FF_press_condition;
         }
@@ -655,6 +647,7 @@ public class App extends PApplet {
 
     private boolean processWave = true;
 
+    
     public void wave_change() {
         // int current_wave=0; 从0 wave 开始
 
@@ -775,7 +768,7 @@ public class App extends PApplet {
                 image(mapTile[i][j], j * 32, i * 32 + 40); // 在对应的位置绘制图片
             }
         }
-
+        image(wizardImage, wizard_house_display_y, wizard_house_display_x);
         // 在wave_change()里，每次wave更变，处理monster的更变
         wave_change();
         
@@ -793,6 +786,7 @@ public class App extends PApplet {
             }
             
             if (g.isReachTheWizardhouse && g.animation_finished) { // 如果怪物到达了巫师的房子且动画完成
+                death_gremlin_index.add(g);
                 current_mana_value -= g.hp;
                 g.animation_finished = false;
             }
@@ -825,7 +819,7 @@ public class App extends PApplet {
             }
         }
 
-        image(wizardImage, wizard_house_display_y, wizard_house_display_x);
+        
 
         topbar.draw(this);
         sidebar.draw(this);
