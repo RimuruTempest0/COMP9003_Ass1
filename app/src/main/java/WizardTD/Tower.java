@@ -13,7 +13,6 @@ public class Tower extends App {
     private double tower_range;
     private double tower_firing_speed;
     private double tower_damage;
-    // private int tower_damage;
 
     private int range_level;
     private int speed_level;
@@ -45,6 +44,10 @@ public class Tower extends App {
 
     }
 
+    /**
+     * Subtract mana value for each tower build
+     * @param subtract_Cost subtract tower cost
+     */
     public void mana_subtractor(int subtract_Cost) {
         if ((current_mana_value - subtract_Cost) < 0) {
             System.out.println("Insufficient Mana !!!");
@@ -79,6 +82,10 @@ public class Tower extends App {
 
     }
 
+    /**
+     * Set tower with cursor position
+     * @param app
+     */
     public void setTowerWithMouse(App app) {
         this.tower_x = app.mouseX;
         this.tower_y = app.mouseY;

@@ -1,5 +1,8 @@
 package WizardTD;
 import java.util.Objects;
+/**
+ * A class for storing x and y coordinates
+ */
 public class MyPoint {
     
         public int x;
@@ -28,6 +31,9 @@ public class MyPoint {
             return this.y;
         }
 
+        /**
+         * Override equals to compare in List
+         */
         @Override
         public boolean equals(Object obj)
         {
@@ -36,12 +42,18 @@ public class MyPoint {
             return p.x == this.x && p.y == this.y;
         }
 
+        /**
+         * Override toString() method for print
+         */
         @Override
         public String toString()
         {
             return "X: "+this.x +" "+"Y: "+this.y;
         }
 
+        /**
+         * Override hashCode to compare
+         */
         @Override
         public int hashCode()
         {

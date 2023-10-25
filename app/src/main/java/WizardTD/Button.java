@@ -29,6 +29,11 @@ public class Button extends App {
         return this.button_y;
     }
 
+    /**
+     * Detect whether cursor is on button
+     * @param app App class object
+     * @return cursor on button condition
+     */
     public boolean mouse_on_button(App app) {
         int mouseX = app.mouseX;
         int mouseY = app.mouseY;
@@ -42,6 +47,10 @@ public class Button extends App {
         return false;
     }
 
+    /**
+     * Draw button cost rectangle
+     * @param app App class object
+     */
     public void drawCost(App app) {
         app.stroke(0);
         app.fill(255);
@@ -52,6 +61,11 @@ public class Button extends App {
         app.text("Cost: "+this.button_cost, this.button_x - 65, this.button_y + 15);
     }
 
+    /**
+     * Draw button cost value
+     * @param app App class object
+     * @param value cost value
+     */
     public void drawCostValue(App app, int value) {
         app.stroke(0);
         app.fill(255);
@@ -62,6 +76,10 @@ public class Button extends App {
         app.text("Cost: "+value, this.button_x - 65, this.button_y + 15);
     }
 
+    /**
+     * Fill the button with grey
+     * @param app
+     */
     public void drawGrey(App app) {
 
         // 填充按钮方框颜色与背景颜色融合
@@ -80,6 +98,10 @@ public class Button extends App {
         }
     }
 
+    /**
+     * Fill the button with yellow
+     * @param app
+     */
     public void drawYellow(App app) {
 
         app.fill(240, 220, 10);
@@ -90,6 +112,10 @@ public class Button extends App {
 
     }
 
+    /**
+     * Draw texts in and alongside button
+     * @param app
+     */
     public void drawText(App app) {
         // 设置内部字体和说明字体
         app.fill(0);
@@ -99,6 +125,10 @@ public class Button extends App {
         app.text(content_alongSide, button_x + button_width + 2, button_y + 15);
     }
 
+    /**
+     * Cursor enhancement
+     * @param app
+     */
     public void drawMouse(App app) {
         int mouseX = app.mouseX;
         int mouseY = app.mouseY;

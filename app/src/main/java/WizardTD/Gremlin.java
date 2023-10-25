@@ -11,6 +11,9 @@ public class Gremlin extends Monster {
     public int current_frame = 0;
     public int number_frames = 5;
     private int life_bar_width = 20;
+    MyPoint next_point = new MyPoint();
+    // 每个Monster存储对应的路线迭代index
+    HashMap<MyPoint, Integer> indexMap = new HashMap<>();
     
     MyPoint spawn_p;
 
@@ -29,6 +32,12 @@ public class Gremlin extends Monster {
         this.monster_y = y;
     }
     
+    /**
+     * Method for drawing gremlin death animation
+     * @param x animation x coordinate
+     * @param y animation y coordinate
+     * @param app
+     */
     public void drawGremlinDeath(int x, int y, App app) {
         double speed = (double) number_frames / (double) FPS;
         if (current_frame == gremlin_dead.length - 1) {
@@ -44,21 +53,35 @@ public class Gremlin extends Monster {
         }
     }
     
-
+    /**
+     * Set monster spawn position
+     * @param x spawn coordinate x
+     * @param y spawn coordinate y
+     */
     public void setSpawnPosition(int x, int y) {
         this.monster_x = x;
         this.monster_y = y;
     }
 
+    /**
+     * Resume gremlin move speed
+     */
     public void resume_speed() {
         current_speed = this.speed;
     }
 
+    /**
+     * Double gremlin move speed
+     */
     public void FF_speed() {
         resume_speed();
         current_speed += current_speed;
     }
 
+    /**
+     * Detect whether gremlin is hitted by bullet
+     * @param damage_take how many damage token
+     */
     public void hitted(double damage_take){
         double current_hp = Math.abs(this.hp-damage_take*this.armour);
         double ratio = current_hp/this.hp*20;
@@ -68,10 +91,11 @@ public class Gremlin extends Monster {
         life_bar_width-=ratio;
     }
 
-    MyPoint next_point = new MyPoint();
-    // 每个Monster存储对应的路线迭代index
-    HashMap<MyPoint, Integer> indexMap = new HashMap<>();
+    
 
+    /**
+     * Gremlin moving logic
+     */
     public void tick() {
         // TODO 这里写死亡状态检测
         if (this.monster_x == wizard_house_y * CELLSIZE + 6

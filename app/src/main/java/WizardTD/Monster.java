@@ -37,9 +37,15 @@ public abstract class Monster extends App {
     }
 
     
-
+    /**
+     * abstract tick for different type of monsters
+     */
     public abstract void tick();
    
+    /**
+     * abstract draw for different type of monsters
+     * @param app
+     */
     public abstract void draw(App app);
    
 }

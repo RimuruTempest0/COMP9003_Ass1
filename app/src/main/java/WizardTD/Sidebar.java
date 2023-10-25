@@ -36,6 +36,9 @@ public class Sidebar extends App {
         app.fill(background_R, background_G, background_B);
         app.rect(sideBar_Cover_Height, TOPBAR, SIDEBAR, sideBar_Cover_Height);
 
+        /**
+         * Draw all buttons
+         */
         ffButton.draw(app);
         pauseButton.draw(app);
         buildTowerButton.draw(app);
@@ -55,7 +58,11 @@ public class Sidebar extends App {
             pauseButton.drawYellow(app);
         }
 
-            //------------------------------Tower Draw START---------------------------------
+        /**
+         * Draw or upgrade towers corresponding to button conditions
+         */
+        
+        //------------------------------Tower Draw START---------------------------------
         if (Build_tower_condition) {
             buildTowerButton.drawYellow(app);
             tower = new Tower(initial_tower_range, initial_tower_firing_speed, initial_tower_damage,

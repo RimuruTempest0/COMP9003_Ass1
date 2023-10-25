@@ -4,10 +4,10 @@ import processing.core.PImage;
 public class Bullet extends App{
     private int bullet_x;
     private int bullet_y;
-    private final int move_speed = 5; //5 Pixels per frame
+    private final int move_distance = 5; //5 Pixels per frame
     private PImage sprite;
     private double bullet_damage;
-   
+    public double lastReturnTime;
 
     public Bullet (int bullet_x, int bullet_y, double bullet_damage, PImage sprite){
         this.bullet_x = bullet_x;
@@ -37,25 +37,31 @@ public class Bullet extends App{
         this.bullet_damage = damage;
     }
 
-    public double lastReturnTime;
-    public void moveToMonster(Gremlin g, int tower_x, int tower_y) {
-        // 计算怪物中心的位置
-        int monsterCenterX = g.monster_x + g.get_sprite_width() / 2;
-        int monsterCenterY = g.monster_y + g.get_sprite_height() / 2;
+    /**
+     * Control the bullet move to a target monster
+     * @param gremlin targe monster object
+     * @param tower_x current tower x coordinate
+     * @param tower_y current tower y coordinate
+     */
+    public void moveToMonster(Gremlin gremlin, int tower_x, int tower_y) {
+        // Calculate the monster central point
+        int monsterCenterX = gremlin.monster_x + gremlin.get_sprite_width() / 2;
+        int monsterCenterY = gremlin.monster_y + gremlin.get_sprite_height() / 2;
     
         double distanceX = monsterCenterX - this.bullet_x;
         double distanceY = monsterCenterY - this.bullet_y;
         double distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         
-        if (distance <= move_speed) { // 如果子弹非常靠近怪物
-            g.hitted(this.bullet_damage);
+        if (distance <= move_distance) { // 如果子弹非常靠近怪物
+            gremlin.hitted(this.bullet_damage);
             // 重置子弹位置到塔
+            // reset the bullet to tower
             this.bullet_x = tower_x;
             this.bullet_y = tower_y;
             this.lastReturnTime = System.currentTimeMillis();
         } else {
-            double moveX = move_speed * (distanceX / distance);
-            double moveY = move_speed * (distanceY / distance);
+            double moveX = move_distance * (distanceX / distance);
+            double moveY = move_distance * (distanceY / distance);
             
             this.bullet_x += moveX;
             this.bullet_y += moveY;

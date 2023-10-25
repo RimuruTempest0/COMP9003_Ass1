@@ -316,32 +316,40 @@ public class App extends PApplet {
 
     public static PImage[] gremlin_dead = new PImage[5];
 
-    private ArrayList<MyPoint> findShortPath(HashMap<MyPoint, MyPoint> pair, MyPoint start, MyPoint destination) {
+    /**
+     * Back trace to find the shortest path
+     * @param pair father nodes and children nodes
+     * @param start path start point
+     * @param destination path end point
+     * @return a list of points
+     */
+    private ArrayList<MyPoint> findShortestPath(HashMap<MyPoint, MyPoint> pair, MyPoint start, MyPoint destination) {
         ArrayList<MyPoint> path = new ArrayList<>();
         MyPoint current = destination;
-        // System.out.println("Pair: " + pair.size());
-        // System.out.println("Start at: " + start.toString());
-        // System.out.println("End at: " + destination.toString());
         while (!current.equals(start)) {
             path.add(0, current);
-            // System.out.println(path.size());
             current = pair.get(current);
-            // System.out.println(pair.containsKey(current));
         }
         path.add(0, start);
         return path;
     }
 
+    /**
+     * The BFS Algorithm
+     * @param start path start point
+     * @param destination path end point
+     * @return a list of points with visited
+     */
     // ------------------------------------BFS
     // start------------------------------------
     private ArrayList<MyPoint> BreadthFirstSearch(MyPoint start, MyPoint destination) {
-        // ArrayList<MyPoint> queue = new ArrayList<>();
+        
         LinkedList<MyPoint> queue = new LinkedList<>();
         ArrayList<MyPoint> visited = new ArrayList<>();
 
         boolean route_found = false;
 
-        // (child, parent)
+        // (children, parent)
         HashMap<MyPoint, MyPoint> pair = new HashMap<>();
 
         queue.addLast(start);
@@ -350,11 +358,6 @@ public class App extends PApplet {
             visited.add(current);
 
             if (current.equals(destination)) {
-                // MyPoint parent = queue.get(queue.size()-1);
-                // pair.put(parent,current);
-                // MyPoint lastParent = visited.get(visited.size()-2);
-                // pair.put(current,lastParent);
-
                 route_found = true;
                 break;
             }
@@ -368,8 +371,7 @@ public class App extends PApplet {
                     queue.addLast(up);
                     pair.put(up, current);
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
-            }
+            } catch (ArrayIndexOutOfBoundsException e) {}
 
             try {
                 MyPoint down = new MyPoint(x + 1, y);
@@ -377,8 +379,7 @@ public class App extends PApplet {
                     queue.addLast(down);
                     pair.put(down, current);
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
-            }
+            } catch (ArrayIndexOutOfBoundsException e) {}
 
             try {
                 MyPoint left = new MyPoint(x, y - 1);
@@ -386,8 +387,7 @@ public class App extends PApplet {
                     queue.addLast(left);
                     pair.put(left, current);
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
-            }
+            } catch (ArrayIndexOutOfBoundsException e) {}
 
             try {
                 MyPoint right = new MyPoint(x, y + 1);
@@ -395,12 +395,8 @@ public class App extends PApplet {
                     queue.addLast(right);
                     pair.put(right, current);
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
-            }
-
+            } catch (ArrayIndexOutOfBoundsException e) {}
         }
-
-        // System.out.println(visited.toString());
 
         if (!route_found) {
             System.out.println("Route not found");
@@ -409,7 +405,7 @@ public class App extends PApplet {
             System.out.println("Route found");
         }
 
-        return findShortPath(pair, start, destination);
+        return findShortestPath(pair, start, destination);
     }
     // ------------------------------------BFS
     // end------------------------------------
@@ -418,7 +414,7 @@ public class App extends PApplet {
     public void setup() {
         frameRate(FPS);
 
-        // 读取layout并处理地图板
+        // read JSON file
         JSONObject gameJson = loadJSONObject(configPath);
 
         // --------------Initialize the map grid START----------
@@ -494,7 +490,6 @@ public class App extends PApplet {
     public static String mouse_on_which_button;
 
     /**
-     * s
      * Receive key pressed signal from the keyboard.
      */
     @Override
@@ -547,7 +542,9 @@ public class App extends PApplet {
     }
 
     
-
+    /**
+     * Receive mouse pressed signal
+     */
     @Override
     public void mousePressed(MouseEvent e) {
         if (Sidebar.ffButton.mouse_on_button(this)) {
@@ -615,14 +612,10 @@ public class App extends PApplet {
 
     }
 
-    /*
-     * @Override
-     * public void mouseDragged(MouseEvent e) {
-     * 
-     * }
-     */
 
-    /*
+    /**
+     * 
+     * initialize wave variables
      * 提取wave信息
      */
     private double next_wave_pause;
@@ -659,6 +652,9 @@ public class App extends PApplet {
     private boolean processWave = true;
     private boolean isLastWave = false;
     
+    /**
+     * Control wave state change
+     */
     public void wave_change() {
         // int current_wave=0; 从0 wave 开始
 
@@ -717,7 +713,8 @@ public class App extends PApplet {
     private HashMap<Integer, ArrayList<Object>> monster_info_map = new HashMap<>();
 
     /**
-     * @param cur_wave
+     * Extract data from wave
+     * @param cur_wave current wave index
      */
     public void process_wave(int cur_wave) {
         JSONObject wave = waves.getJSONObject(cur_wave);
@@ -759,14 +756,11 @@ public class App extends PApplet {
         monster_info_map.put(cur_wave, one_wave_monster);
     }
 
-    // draw the grelin death animation on (x, y) position
-
     /**
      * Draw all elements in the game by current frame.
      * draw() will be called once every second.
      */
     public static MyPoint spawn_point;
-    // private Tower tower;
 
     @Override
     public void draw() {

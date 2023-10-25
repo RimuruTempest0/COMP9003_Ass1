@@ -17,11 +17,15 @@ public class Topbar extends App {
     public Topbar() {
 
     }
+
+    /**
+     * Control how much mana to subtract
+     * @param sub_value mana value to subtract
+     */
     public void mana_counter_sub(int sub_value) {
         mana_counter-= sub_value;
     }
     public void draw(App app) {
-        
         
         // 画一个盖住上方的bar
         app.stroke(background_R, background_G, background_B);
