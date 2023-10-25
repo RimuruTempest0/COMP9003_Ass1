@@ -37,6 +37,7 @@ public class Bullet extends App{
         this.bullet_damage = damage;
     }
 
+    public double lastReturnTime;
     public void moveToMonster(Gremlin g, int tower_x, int tower_y) {
         // 计算怪物中心的位置
         int monsterCenterX = g.monster_x + g.get_sprite_width() / 2;
@@ -51,12 +52,14 @@ public class Bullet extends App{
             // 重置子弹位置到塔
             this.bullet_x = tower_x;
             this.bullet_y = tower_y;
+            this.lastReturnTime = System.currentTimeMillis();
         } else {
             double moveX = move_speed * (distanceX / distance);
             double moveY = move_speed * (distanceY / distance);
             
             this.bullet_x += moveX;
             this.bullet_y += moveY;
+            
         }
     }
     

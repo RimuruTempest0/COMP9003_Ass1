@@ -99,7 +99,7 @@ public class Tower extends App {
     }
 
     public void upgrade_speed() {
-        this.tower_firing_speed += 0.5;
+        this.tower_firing_speed -= 0.5;
         this.speed_level++;
         // this.speed_cost += 10;
         upgrade_cost();
@@ -112,7 +112,7 @@ public class Tower extends App {
   
 
     public void upgrade_damage() {
-        this.tower_damage += (tower_damage / 2);
+        this.tower_damage = this.tower_damage-(tower_damage / 2);
         this.damage_level++;
         this.bullet.update_damage(this.tower_damage);
         upgrade_cost();
@@ -212,18 +212,39 @@ public class Tower extends App {
         this.tower_y+this.tower_sprite.width/2, this.tower_damage, bullet_image);
     }
 
-    public void draw_bullet(App app) {
-         Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
-         int towerX = this.tower_x + this.tower_sprite.width / 2;
-         int towerY = this.tower_y + this.tower_sprite.width / 2;
-        if (closestGremlin != null) {
+    // public void fire_bullet(App app) {
+    //      Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
+    //      int towerX = this.tower_x + this.tower_sprite.width / 2;
+    //      int towerY = this.tower_y + this.tower_sprite.width / 2;
+    //     if (closestGremlin != null) {
             
-            bullet.moveToMonster(closestGremlin, towerX, towerY);
-        } else {
-            bullet.setBulletXY(towerX, towerY);
-        }
+    //         bullet.moveToMonster(closestGremlin, towerX, towerY);
+    //     } else {
+    //         bullet.setBulletXY(towerX, towerY);
+    //     }
 
-        bullet.draw(app);
+    //     bullet.draw(app);
+    // }
+    
+    public void fire_bullet(App app) {
+        double currentTime = System.currentTimeMillis();
+        double timeSinceLastReturn = currentTime - bullet.lastReturnTime;
+
+        // 检查是否已经过了1500毫秒（1.5秒）
+        if (timeSinceLastReturn >= this.tower_firing_speed*1000) {
+            // System.out.println(this.tower_firing_speed*1000);
+            Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
+            int towerX = this.tower_x + this.tower_sprite.width / 2;
+            int towerY = this.tower_y + this.tower_sprite.width / 2;
+
+            if (closestGremlin != null) {
+                bullet.moveToMonster(closestGremlin, towerX, towerY);
+            } else {
+                bullet.setBulletXY(towerX, towerY);
+            }
+
+            bullet.draw(app);
+        }
     }
    
 
@@ -232,7 +253,6 @@ public class Tower extends App {
         if (mouse_on_tower(app)) {
             draw_range(app);
         }
-
         app.image(this.tower_sprite, this.tower_x, this.tower_y);
     }
 }

@@ -490,7 +490,7 @@ public class App extends PApplet {
     public static boolean Deploy_range_upgrade = false;
     public static boolean Deploy_speed_upgrade = false;
     public static boolean Deploy_damage_upgrade = false;
-
+    public static boolean Lose_condition = false;
     public static String mouse_on_which_button;
 
     /**
@@ -523,6 +523,14 @@ public class App extends PApplet {
             Upgrade_damage_condition = !Upgrade_damage_condition;
         }
 
+        if (Lose_condition) {
+            if (key == 'r' || key == 'R') {
+                setup();
+                draw();
+                gremlinList.removeAll(gremlinList);
+                loop();
+            }
+        }
         
         
     }
@@ -633,7 +641,7 @@ public class App extends PApplet {
 
     private double Monster_timer;
     // 更换wave的时机就是duration(startsIn)减为0
-    int startTime = millis();
+    private int startTime;
     private int startsIn;
 
     public int getStartIn() {
@@ -646,7 +654,7 @@ public class App extends PApplet {
     public int next_wave_display = next_wave_index + 1;
 
     private boolean processWave = true;
-
+    private boolean isLastWave = false;
     
     public void wave_change() {
         // int current_wave=0; 从0 wave 开始
@@ -717,6 +725,7 @@ public class App extends PApplet {
         if (cur_wave + 1 >= waves.size()) {
             // TODO 在这里处理最后一个wave的逻辑，不显示wave和startsIn
             next_wave_pause = 5;
+            isLastWave = true;
         } else {
             // 提取下一波wave的duration
             JSONObject next_wave = waves.getJSONObject(next_wave_index);
@@ -775,20 +784,30 @@ public class App extends PApplet {
         for (int x=0; x<gremlinList.size(); x++) {
             Gremlin g = gremlinList.get(x);
             
-            // System.out.println(g.animation_finished);
+            // 被打死
             if (!g.isAlive && g.animation_finished) { // 检查怪物是否死亡且动画是否完成
                 death_gremlin_index.add(g);
                 
-                if (!g.isReachTheWizardhouse && g.animation_finished) { // 如果怪物没有到达巫师的房子，则增加 mana
+                if (!g.isReachTheWizardhouse) { // 如果怪物没有到达巫师的房子，则增加 mana
                     current_mana_value += mana_gained_on_kill;
                     g.animation_finished = false;
                 }
             }
             
+            // 撞到house
             if (g.isReachTheWizardhouse && g.animation_finished) { // 如果怪物到达了巫师的房子且动画完成
                 death_gremlin_index.add(g);
                 current_mana_value -= g.hp;
                 g.animation_finished = false;
+
+                if(current_mana_value <= 0) {
+                    current_mana_value = 0;
+                    textSize(50);
+                    text("You Lose!",380,340);
+                    noLoop();
+                    Lose_condition = true;
+                }
+                
             }
             
             g.tick();
@@ -827,6 +846,12 @@ public class App extends PApplet {
         
         for(Gremlin gremlin : death_gremlin_index) {
                 gremlinList.remove(gremlin);
+        }
+
+        if(isLastWave && gremlinList.size()==0) {
+            textSize(50);
+            text("You Win!",380,340);
+            noLoop();
         }
     }
 

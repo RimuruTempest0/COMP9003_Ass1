@@ -148,7 +148,7 @@ public class Sidebar extends App {
                     tower.setTowerImage(tower_2_image);
                     tower.setTowerXY(x, y);
                     tower.draw(app);
-                    tower.draw_bullet(app);
+                    tower.fire_bullet(app);
                     tower.draw_square(app, tower.getSpeedLevel()-2);
                     tower.draw_O(app, tower.getRangeLevel()-2);
                     tower.draw_X(app, tower.getDamageLevel()-2);
@@ -156,14 +156,14 @@ public class Sidebar extends App {
                     tower.setTowerImage(tower_1_image);
                     tower.setTowerXY(x, y);
                     tower.draw(app);
-                    tower.draw_bullet(app);
+                    tower.fire_bullet(app);
                     tower.draw_square(app, tower.getSpeedLevel()-1);
                     tower.draw_O(app, tower.getRangeLevel()-1);
                     tower.draw_X(app, tower.getDamageLevel()-1);
                 } else {
                     tower.setTowerXY(x, y);
                     tower.draw(app);
-                    tower.draw_bullet(app);
+                    tower.fire_bullet(app);
                     tower.draw_square(app, tower.getSpeedLevel());
                     tower.draw_O(app, tower.getRangeLevel());
                     tower.draw_X(app, tower.getDamageLevel());

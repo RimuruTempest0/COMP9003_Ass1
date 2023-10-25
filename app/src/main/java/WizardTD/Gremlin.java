@@ -32,11 +32,11 @@ public class Gremlin extends Monster {
     public void drawGremlinDeath(int x, int y, App app) {
         double speed = (double) number_frames / (double) FPS;
         if (current_frame == gremlin_dead.length - 1) {
-            animation_start = false;
-            animation_finished = true;
+            this.animation_start = false;
+            this.animation_finished = true;
         }
 
-        if (animation_start) {
+        if (this.animation_start) {
             app.image(gremlin_dead[current_frame], x, y);
             if (app.frameCount % (FPS * speed) == 0) {
                 current_frame = (current_frame + 1) % number_frames;
@@ -60,10 +60,12 @@ public class Gremlin extends Monster {
     }
 
     public void hitted(double damage_take){
-        this.hp-=damage_take*this.armour;
+        double current_hp = Math.abs(this.hp-damage_take*this.armour);
+        double ratio = current_hp/this.hp*20;
+        this.hp=current_hp;
         // double sub_width = this.hp / this.hp * life_bar_width;
         // life_bar_width-= (int) sub_width;
-        life_bar_width-=4;
+        life_bar_width-=ratio;
     }
 
     MyPoint next_point = new MyPoint();
