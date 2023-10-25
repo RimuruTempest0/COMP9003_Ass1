@@ -6,11 +6,13 @@ public class Bullet extends App{
     private int bullet_y;
     private final int move_speed = 5; //5 Pixels per frame
     private PImage sprite;
+    private double bullet_damage;
    
 
-    public Bullet (int bullet_x, int bullet_y, PImage sprite){
+    public Bullet (int bullet_x, int bullet_y, double bullet_damage, PImage sprite){
         this.bullet_x = bullet_x;
         this.bullet_y = bullet_y;
+        this.bullet_damage = bullet_damage;
         this.sprite = sprite;
     }
 
@@ -27,6 +29,10 @@ public class Bullet extends App{
         this.bullet_y = y;
     }
 
+    public void update_damage(double damage) {
+        this.bullet_damage = damage;
+    }
+
     public void moveToMonster(Gremlin g, int tower_x, int tower_y) {
         // 计算怪物中心的位置
         int monsterCenterX = g.monster_x + g.get_sprite_width() / 2;
@@ -37,7 +43,7 @@ public class Bullet extends App{
         double distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         
         if (distance <= move_speed) { // 如果子弹非常靠近怪物
-            g.hitted();
+            g.hitted(this.bullet_damage);
             // 重置子弹位置到塔
             this.bullet_x = tower_x;
             this.bullet_y = tower_y;

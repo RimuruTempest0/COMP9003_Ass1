@@ -628,6 +628,7 @@ public class App extends PApplet {
     public static double pre_wave_pause;
 
     public static ArrayList<Gremlin> gremlinList = new ArrayList<>();
+    public static ArrayList<Gremlin> death_gremlin_index = new ArrayList<>();
     private ArrayList<ArrayList<Monster>> big_monsterList = new ArrayList<>();
 
     public static String monster_type;
@@ -778,15 +779,29 @@ public class App extends PApplet {
         // 在wave_change()里，每次wave更变，处理monster的更变
         wave_change();
         
-
-        for (Gremlin m : gremlinList) {
-            if(!m.isAlive){
-                // TODO 这里需要思考怎么把死亡的Monster移除
-                // gremlinList.remove(m);
+        for (int x=0; x<gremlinList.size(); x++) {
+            Gremlin g = gremlinList.get(x);
+            
+            // System.out.println(g.animation_finished);
+            if (!g.isAlive && g.animation_finished) { // 检查怪物是否死亡且动画是否完成
+                death_gremlin_index.add(g);
+                
+                if (!g.isReachTheWizardhouse && g.animation_finished) { // 如果怪物没有到达巫师的房子，则增加 mana
+                    current_mana_value += mana_gained_on_kill;
+                    g.animation_finished = false;
+                }
             }
-            m.tick();
-            m.draw(this);
+            
+            if (g.isReachTheWizardhouse && g.animation_finished) { // 如果怪物到达了巫师的房子且动画完成
+                current_mana_value -= g.hp;
+                g.animation_finished = false;
+            }
+            
+            g.tick();
+            g.draw(this);
         }
+        
+        
 
         this.Monster_timer--;
 
@@ -797,10 +812,12 @@ public class App extends PApplet {
 
         // 这里这个map是控制wave里monsters里面的信息的
         if (monster_info_map.containsKey(current_wave)) {
+            double hp = (double) (monster_info_map.get(current_wave).get(1));
             double speed = (double) (monster_info_map.get(current_wave).get(2));
+            double armour = (double) (monster_info_map.get(current_wave).get(3));
             if (this.Monster_timer < 0 && monster_count != 0) {
                 gremlinList.add(new Gremlin(spawn_point.getY() * CELLSIZE + gremlin_adjust,
-                        spawn_point.getX() * CELLSIZE + TOPBAR + gremlin_adjust, speed, true, false,
+                        spawn_point.getX() * CELLSIZE + TOPBAR + gremlin_adjust, speed, hp, armour, true, false, false,
                         this.gremlin_image));
                 monster_count--;
 
@@ -813,6 +830,10 @@ public class App extends PApplet {
         topbar.draw(this);
         sidebar.draw(this);
 
+        
+        for(Gremlin gremlin : death_gremlin_index) {
+                gremlinList.remove(gremlin);
+        }
     }
 
     public static void main(String[] args) {

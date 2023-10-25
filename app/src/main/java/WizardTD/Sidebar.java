@@ -69,6 +69,7 @@ public class Sidebar extends App {
                         tower_to_point.put(tower, tower_Point);
                         point_to_tower.put(tower_Point, tower);
                         tower_list.add(tower);
+                        tower.set_bullet();
                         tower.mana_subtractor(initial_tower_cost);
                         Place_tower_on_map = !Place_tower_on_map;
                         Build_tower_condition = !Build_tower_condition;
@@ -147,6 +148,7 @@ public class Sidebar extends App {
                     tower.setTowerImage(tower_2_image);
                     tower.setTowerXY(x, y);
                     tower.draw(app);
+                    tower.draw_bullet(app);
                     tower.draw_square(app, tower.getSpeedLevel()-2);
                     tower.draw_O(app, tower.getRangeLevel()-2);
                     tower.draw_X(app, tower.getDamageLevel()-2);
@@ -154,12 +156,14 @@ public class Sidebar extends App {
                     tower.setTowerImage(tower_1_image);
                     tower.setTowerXY(x, y);
                     tower.draw(app);
+                    tower.draw_bullet(app);
                     tower.draw_square(app, tower.getSpeedLevel()-1);
                     tower.draw_O(app, tower.getRangeLevel()-1);
                     tower.draw_X(app, tower.getDamageLevel()-1);
                 } else {
                     tower.setTowerXY(x, y);
                     tower.draw(app);
+                    tower.draw_bullet(app);
                     tower.draw_square(app, tower.getSpeedLevel());
                     tower.draw_O(app, tower.getRangeLevel());
                     tower.draw_X(app, tower.getDamageLevel());

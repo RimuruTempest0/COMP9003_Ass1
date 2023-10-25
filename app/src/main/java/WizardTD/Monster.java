@@ -8,13 +8,19 @@ public abstract class Monster extends App {
     public double speed;
     public PImage sprite;
     public boolean isAlive;
+    public boolean isReachTheWizardhouse;
+    public double hp;
+    public double armour;
     
 
-    public Monster(int monster_x, int monster_y, double speed, boolean isAlive, PImage sprite) {
+    public Monster(int monster_x, int monster_y, double speed, double hp, double armour, boolean isAlive, boolean isReachTheWizardhouse, PImage sprite) {
         this.monster_x = monster_x;
         this.monster_y = monster_y;
         this.speed = speed;
+        this.hp = hp;
+        this.armour = armour;
         this.isAlive = isAlive;
+        this.isReachTheWizardhouse = isReachTheWizardhouse;
         this.sprite = sprite;
     }
 

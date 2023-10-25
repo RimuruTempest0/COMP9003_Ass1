@@ -9,10 +9,10 @@ public class Tower extends App {
     private int tower_x;
     private int tower_y;
 
-    private double initial_tower_range;
-    private double initial_tower_firing_speed;
-    private int initial_tower_damage;
-    private int tower_damage;
+    private double tower_range;
+    private double tower_firing_speed;
+    private double tower_damage;
+    // private int tower_damage;
 
     private int range_level;
     private int speed_level;
@@ -26,18 +26,19 @@ public class Tower extends App {
     private PImage tower_sprite;
     private Bullet bullet;
 
+
     public Tower(double initial_tower_range, double initial_tower_firing_speed,
             int initial_tower_damage, int initial_tower_cost) {
 
-        this.initial_tower_range = initial_tower_range;
-        this.initial_tower_firing_speed = initial_tower_firing_speed;
+        this.tower_range = initial_tower_range;
+        this.tower_firing_speed = initial_tower_firing_speed;
         this.tower_damage = initial_tower_damage;
         this.range_level = 0;
         this.speed_level = 0;
         this.damage_level = 0;
         this.upgrade_count = 0;
         this.tower_cost = initial_tower_cost;
-        this.bullet = new Bullet(0, 0, bullet_image);
+        
         
 
     }
@@ -87,7 +88,7 @@ public class Tower extends App {
     }
 
     public void upgrade_range() {
-        this.initial_tower_range += App.CELLSIZE;
+        this.tower_range += App.CELLSIZE;
         this.range_level++;
         // this.range_cost += 10;
         upgrade_cost();
@@ -98,7 +99,7 @@ public class Tower extends App {
     }
 
     public void upgrade_speed() {
-        this.initial_tower_firing_speed += 0.5;
+        this.tower_firing_speed += 0.5;
         this.speed_level++;
         // this.speed_cost += 10;
         upgrade_cost();
@@ -108,11 +109,15 @@ public class Tower extends App {
         return this.speed_level;
     }
 
+  
+
     public void upgrade_damage() {
-        this.tower_damage += (initial_tower_damage / 2);
+        this.tower_damage += (tower_damage / 2);
         this.damage_level++;
+        this.bullet.update_damage(this.tower_damage);
         upgrade_cost();
     }
+   
 
     public int getDamageLevel() {
         return this.damage_level;
@@ -148,7 +153,7 @@ public class Tower extends App {
         app.strokeWeight(1);
         app.ellipse((float) (this.tower_x + this.tower_sprite.width / 2),
                 (float) (this.tower_y + this.tower_sprite.height / 2),
-                (float) this.initial_tower_range, (float) this.initial_tower_range);
+                (float) this.tower_range*2, (float) this.tower_range*2);
     }
 
     public boolean mouse_on_tower(App app) {
@@ -182,19 +187,19 @@ public class Tower extends App {
         Gremlin closestMonster = null;
         double closestDistance = Double.MAX_VALUE;
 
-        for (Gremlin m : gremlinList) {
+        for (Gremlin g : gremlinList) {
             // 获取塔和怪物的位置
-            int towerX = this.tower_x;
-            int towerY = this.tower_y;
-            int monsterX = m.monster_x;
-            int monsterY = m.monster_y;
+            int towerX = this.tower_x + this.tower_sprite.width / 2;
+            int towerY = this.tower_y + this.tower_sprite.width / 2;
+            int monsterX = g.monster_x + g.get_sprite_width()/2;
+            int monsterY = g.monster_y + g.get_sprite_width()/2;
 
             // 计算塔和怪物之间的距离
             double distance = Math.sqrt(Math.pow(monsterX - towerX, 2) + Math.pow(monsterY - towerY, 2));
 
             // 如果怪物在塔的射程内并且距离比当前找到的距离更近，那么更新最近的怪物和距离
-            if (distance <= this.initial_tower_range && distance < closestDistance) {
-                closestMonster = m;
+            if (distance < this.tower_range && distance < closestDistance) {
+                closestMonster = g;
                 closestDistance = distance;
             }
         }
@@ -202,6 +207,24 @@ public class Tower extends App {
         return closestMonster;
     }
 
+    public void set_bullet() {
+        this.bullet = new Bullet(this.tower_x+this.tower_sprite.width/2, 
+        this.tower_y+this.tower_sprite.width/2, this.tower_damage, bullet_image);
+    }
+
+    public void draw_bullet(App app) {
+         Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
+         int towerX = this.tower_x + this.tower_sprite.width / 2;
+         int towerY = this.tower_y + this.tower_sprite.width / 2;
+        if (closestGremlin != null) {
+            
+            bullet.moveToMonster(closestGremlin, towerX, towerY);
+        } else {
+            bullet.setBulletXY(towerX, towerY);
+        }
+
+        bullet.draw(app);
+    }
    
 
     public void draw(App app) {
@@ -211,19 +234,5 @@ public class Tower extends App {
         }
 
         app.image(this.tower_sprite, this.tower_x, this.tower_y);
-        // bullet = new Bullet(this.tower_x, this.tower_y, bullet_image);
-        int tower_width = this.tower_sprite.width;
-        int tower_height = this.tower_sprite.height;
-
-        
-        
-        Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
-        if (closestGremlin != null) {
-            // System.out.println(closestMonster.monster_x + " "+closestMonster.monster_y);
-            bullet.moveToMonster(closestGremlin, this.tower_x+ 13, this.tower_y+ 13);
-        }
-
-        bullet.draw(app);
-
     }
 }

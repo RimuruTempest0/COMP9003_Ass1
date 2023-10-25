@@ -7,16 +7,19 @@ import processing.core.PImage;
 public class Gremlin extends Monster {
 
     public boolean animation_start;
+    public boolean animation_finished;
     public int current_frame = 0;
     public int number_frames = 5;
     private int life_bar_width = 20;
+    
     MyPoint spawn_p;
 
-    public Gremlin(int monster_x, int monster_y, double speed, boolean isAlive, boolean animation_start,
+    public Gremlin(int monster_x, int monster_y, double speed, double hp, double armour, boolean isAlive, boolean isReachTheWizardhouse, boolean animation_start,
             PImage sprite) {
-        super(monster_x, monster_y, speed, isAlive, sprite);
+        super(monster_x, monster_y, speed, hp, armour, isAlive, isReachTheWizardhouse, sprite);
         this.animation_start = animation_start;
         spawn_p = new MyPoint(((monster_y - 6 - TOPBAR) / CELLSIZE), (monster_x - 6) / CELLSIZE);
+        
     }
 
     private double current_speed = this.speed;
@@ -25,10 +28,12 @@ public class Gremlin extends Monster {
         this.monster_x = x;
         this.monster_y = y;
     }
+    
     public void drawGremlinDeath(int x, int y, App app) {
         double speed = (double) number_frames / (double) FPS;
         if (current_frame == gremlin_dead.length - 1) {
             animation_start = false;
+            animation_finished = true;
         }
 
         if (animation_start) {
@@ -38,6 +43,7 @@ public class Gremlin extends Monster {
             }
         }
     }
+    
 
     public void setSpawnPosition(int x, int y) {
         this.monster_x = x;
@@ -53,9 +59,13 @@ public class Gremlin extends Monster {
         current_speed += current_speed;
     }
 
-    public void hitted(){
+    public void hitted(double damage_take){
+        this.hp-=damage_take*this.armour;
+        // double sub_width = this.hp / this.hp * life_bar_width;
+        // life_bar_width-= (int) sub_width;
         life_bar_width-=4;
     }
+
     MyPoint next_point = new MyPoint();
     // 每个Monster存储对应的路线迭代index
     HashMap<MyPoint, Integer> indexMap = new HashMap<>();
@@ -63,10 +73,14 @@ public class Gremlin extends Monster {
     public void tick() {
         // TODO 这里写死亡状态检测
         if (this.monster_x == wizard_house_y * CELLSIZE + 6
-                && this.monster_y == wizard_house_x * CELLSIZE + TOPBAR + 6 || life_bar_width<=0) {
+                && this.monster_y == wizard_house_x * CELLSIZE + TOPBAR + 6 ) {
+            this.isAlive = false;
+            this.isReachTheWizardhouse = true;
+            this.animation_start = true;
+        } else if (life_bar_width<=0) {
             this.isAlive = false;
             this.animation_start = true;
-        } else {
+        } else{
             // 判断上下左右走，用当前Point.get(x,y)于下一个Point.get(x,y)判断
             // 判断下一个Point的x还是y相等，然后判断x y的大小
             for (int x = 0; x < startPoints.size(); x++) {
@@ -166,10 +180,12 @@ public class Gremlin extends Monster {
             app.rect(this.monster_x, this.monster_y - 10, life_bar_width, 3);
 
             app.image(this.sprite, this.monster_x, this.monster_y);
+
+            
         } else {
 
             drawGremlinDeath(monster_x, monster_y, app);
-            
+           
         }
 
     }
