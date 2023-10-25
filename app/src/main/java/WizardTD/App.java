@@ -525,9 +525,12 @@ public class App extends PApplet {
 
         if (Lose_condition) {
             if (key == 'r' || key == 'R') {
+                gremlinList.removeAll(gremlinList);
+                Lose_condition = false;
+                isLastWave = false;
                 setup();
                 draw();
-                gremlinList.removeAll(gremlinList);
+                
                 loop();
             }
         }

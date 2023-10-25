@@ -27,6 +27,8 @@ public class Sidebar extends App {
     public static HashMap<MyPoint, Tower> point_to_tower = new HashMap<>();
     private Tower tower;
     
+    private ArrayList<String> costs_board = new ArrayList<String>();
+    public static int total_cost = 0;
     public void draw(App app) {
         // 先画一个大的矩形，要盖住右侧出生的小兵, Right bar
         int sideBar_Cover_Height = CELLSIZE * BOARD_WIDTH;
@@ -83,12 +85,22 @@ public class Sidebar extends App {
             upgradeRangeButton.drawYellow(app);
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
+                Integer cost = (rangeCost);
+                if(!costs_board.contains("Range cost: "+cost.toString())){
+                    total_cost+=cost;
+                    costs_board.add("Range cost: "+cost.toString());
+                }
+                tower.drawUpgradePanel(650, 450, 100, 150, costs_board, app);
+                
+
                 Tower tower = point_to_tower.get(tower_Point);
                 if(Deploy_range_upgrade) {
                     if(tower.getRangeLevel()<3){
                         tower.upgrade_range();
                         if(rangeCost<30) {rangeCost += 10;}
                         tower.mana_subtractor(tower.getRangeLevel()*10);
+                        costs_board.remove("Range cost: "+cost.toString());
+                        total_cost=0;
                     }else{
                         System.out.println("Tower Range Level Max !!!");
                     }
@@ -102,12 +114,22 @@ public class Sidebar extends App {
             upgradeSpeedButton.drawYellow(app);
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
+                Integer cost = (speedCost);
+                if(!costs_board.contains("Speed cost: "+cost.toString())){
+                    total_cost+=cost;
+                    costs_board.add("Speed cost: "+cost.toString());
+                }
+                tower.drawUpgradePanel(650, 450, 100, 150, costs_board, app);
+                
+                
                 Tower tower = point_to_tower.get(tower_Point);
                 if(Deploy_speed_upgrade) {
                     if(tower.getSpeedLevel()<3){
                         tower.upgrade_speed();
                         if(speedCost<30) {speedCost += 10;}
                         tower.mana_subtractor(tower.getSpeedLevel()*10);
+                        costs_board.remove("Speed cost: "+cost.toString());
+                        total_cost = 0;
                     }else{
                         System.out.println("Tower Speed Level Max !!!");
                     }
@@ -121,12 +143,20 @@ public class Sidebar extends App {
             upgradeDamageButton.drawYellow(app);
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
+                Integer cost = (damageCost);
+                if(!costs_board.contains("Damage cost: "+cost.toString())){
+                    total_cost+=cost;
+                    costs_board.add("Damage cost: "+cost.toString());
+                }
+                tower.drawUpgradePanel(650, 450, 100, 150, costs_board, app);
                 Tower tower = point_to_tower.get(tower_Point);
                 if(Deploy_damage_upgrade) {
                     if(tower.getDamageLevel()<3){
                         tower.upgrade_damage();
                         if(damageCost<30) {damageCost += 10;}
                         tower.mana_subtractor(tower.getDamageLevel()*10);
+                        costs_board.remove("Damage cost: "+cost.toString());
+                        total_cost = 0;
                     }else{
                         System.out.println("Tower Damage Level Max !!!");
                     }
@@ -147,23 +177,26 @@ public class Sidebar extends App {
                 {
                     tower.setTowerImage(tower_2_image);
                     tower.setTowerXY(x, y);
-                    tower.draw(app);
                     tower.fire_bullet(app);
+                    tower.draw(app);
+                    
                     tower.draw_square(app, tower.getSpeedLevel()-2);
                     tower.draw_O(app, tower.getRangeLevel()-2);
                     tower.draw_X(app, tower.getDamageLevel()-2);
                 } else if(tower.getDamageLevel() >= 1 && tower.getRangeLevel() >= 1 && tower.getSpeedLevel() >= 1) {
                     tower.setTowerImage(tower_1_image);
                     tower.setTowerXY(x, y);
-                    tower.draw(app);
                     tower.fire_bullet(app);
+                    tower.draw(app);
+                    
                     tower.draw_square(app, tower.getSpeedLevel()-1);
                     tower.draw_O(app, tower.getRangeLevel()-1);
                     tower.draw_X(app, tower.getDamageLevel()-1);
                 } else {
                     tower.setTowerXY(x, y);
-                    tower.draw(app);
                     tower.fire_bullet(app);
+                    tower.draw(app);
+                    
                     tower.draw_square(app, tower.getSpeedLevel());
                     tower.draw_O(app, tower.getRangeLevel());
                     tower.draw_X(app, tower.getDamageLevel());

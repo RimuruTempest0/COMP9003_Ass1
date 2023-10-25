@@ -1,5 +1,6 @@
 package WizardTD;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PImage;
@@ -26,6 +27,7 @@ public class Tower extends App {
     private PImage tower_sprite;
     private Bullet bullet;
 
+   
 
     public Tower(double initial_tower_range, double initial_tower_firing_speed,
             int initial_tower_damage, int initial_tower_cost) {
@@ -246,12 +248,40 @@ public class Tower extends App {
             bullet.draw(app);
         }
     }
-   
+    
+    void drawUpgradePanel(int x, int y, int width, int height, ArrayList<String> costs, App app) {
+        // Draw the background rectangle
+        app.fill(255); // White color
+        app.stroke(0); // Black border
+        app.rect(x, y, width, height);
+        
+        // Draw the title
+        app.fill(0); // Black color
+        app.textSize(12);
+        app.text("Upgrade Cost", x+5, y +18);
+        
+        app.line(x, y+25, x+width, y+25);
+        // Draw the costs
+        app.textSize(18);
+        
+        for (int i = 0; i < costs.size(); i++) {
+            app.textSize(10);
+            app.text(costs.get(i), x + 5 , y + 50 + i * 25);
+            if(i==costs.size()-1) {
+                app.line(x, y + 55 + i * 30, x+width, y + 55 + i * 30);
+                app.text("Total: " + Sidebar.total_cost, x + 5, y + 70 + i * 30);
+            }
+        }
+
+        
+        
+      }
 
     public void draw(App app) {
 
         if (mouse_on_tower(app)) {
             draw_range(app);
+
         }
         app.image(this.tower_sprite, this.tower_x, this.tower_y);
     }
