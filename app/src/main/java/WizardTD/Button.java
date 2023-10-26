@@ -30,6 +30,16 @@ public class Button extends App {
     }
 
     /**
+     * Update the mana pool spell
+     * @param cost update cost
+     * @param content update content_alongSide
+     */
+    public void set_button_cost_and_content(int cost, String content) {
+        this.button_cost = cost;
+        this.content_alongSide = content;
+    }
+
+    /**
      * Detect whether cursor is on button
      * @param app App class object
      * @return cursor on button condition
@@ -151,6 +161,7 @@ public class Button extends App {
 
     }
 
+    
     public void draw(App app) {
 
         drawGrey(app);

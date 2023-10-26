@@ -1,12 +1,12 @@
 XX             SS  S
  XS S S  S S  S     
  X      S   S  SS SX
-XXXXX         S  XXX
+XXXXW         S  XXX
   S X   S  S     XSX
   SXXXXXXXXXXXXXXXXX
   S X X         X  S
     S S        XX S 
-         WXXXXXXX S 
+         XXXXXXXX S 
    S   S          SS
      S S        S S 
  S   S    SS    S S 

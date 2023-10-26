@@ -299,6 +299,11 @@ public class App extends PApplet {
     public static int initial_mana_cap;
     public static int initial_mana_gained_per_second;
     public static int current_mana_value; // 这个变量在Topbar里赋值
+    public static int mana_pool_spell_initial_cost;
+    public static int mana_pool_spell_cost_increase_per_use;
+    public static double mana_pool_spell_cap_multiplier;
+    public static double mana_pool_spell_mana_gained_multiplier;
+
 
     public static double initial_tower_range;
     public static double initial_tower_firing_speed;
@@ -429,6 +434,10 @@ public class App extends PApplet {
         initial_mana = gameJson.getInt("initial_mana");
         initial_mana_gained_per_second = gameJson.getInt("initial_mana_gained_per_second");
         initial_mana_cap = gameJson.getInt("initial_mana_cap");
+        mana_pool_spell_initial_cost = gameJson.getInt("mana_pool_spell_initial_cost");
+        mana_pool_spell_cost_increase_per_use = gameJson.getInt("mana_pool_spell_cost_increase_per_use");
+        mana_pool_spell_cap_multiplier = gameJson.getDouble("mana_pool_spell_cap_multiplier");
+        mana_pool_spell_mana_gained_multiplier = gameJson.getDouble("mana_pool_spell_mana_gained_multiplier");
 
         current_mana_value = initial_mana;
         // 读取wave内容
@@ -478,6 +487,7 @@ public class App extends PApplet {
     public static boolean Pause_press_condition = false;
     public static boolean Build_tower_condition = false;
     public static boolean Place_tower_on_map = false;
+    public static boolean Upgrade_mana_pool_condition = false;
 
     public static boolean Upgrade_range_condition = false;
     public static boolean Upgrade_speed_condition = false;
@@ -521,13 +531,25 @@ public class App extends PApplet {
         if (Lose_condition) {
             if (key == 'r' || key == 'R') {
                 gremlinList.removeAll(gremlinList);
+                setup();
                 Lose_condition = false;
                 isLastWave = false;
-                setup();
-                draw();
+                current_wave=0;
+                next_wave_index = current_wave + 1;
+                next_wave_display = next_wave_index + 1;
+                wave_change();
+                monster_generate();
                 
+                startTime=millis();
+                
+                
+                draw();
                 loop();
             }
+        }
+
+        if (key == 'm' || key == 'M') {
+            Upgrade_mana_pool_condition = !Upgrade_mana_pool_condition;
         }
         
         
@@ -603,6 +625,10 @@ public class App extends PApplet {
                     Deploy_damage_upgrade = !Deploy_damage_upgrade;
                 }
             }
+        }
+
+        if(Sidebar.manaPoolButton.mouse_on_button(this)) {
+            Upgrade_mana_pool_condition = !Upgrade_mana_pool_condition;
         }
 
     }
@@ -705,7 +731,6 @@ public class App extends PApplet {
             next_wave_display++;
             processWave = true;
             // System.out.println(monsterList.size());
-
         }
 
     }
@@ -762,6 +787,29 @@ public class App extends PApplet {
      */
     public static MyPoint spawn_point;
 
+    private void monster_generate() {
+        this.Monster_timer--;
+
+        // 生成Monster List
+        spawn_point = startPoints.get(random.nextInt(startPoints.size()));
+        int gremlin_adjust = (CELLSIZE - gremlin_image.width) / 2; // 这里是6
+        // TODO 目前开始是从0出生的，还不是地图外
+
+        // 这里这个map是控制wave里monsters里面的信息的
+        if (monster_info_map.containsKey(current_wave)) {
+            double hp = (double) (monster_info_map.get(current_wave).get(1));
+            double speed = (double) (monster_info_map.get(current_wave).get(2));
+            double armour = (double) (monster_info_map.get(current_wave).get(3));
+            if (this.Monster_timer < 0 && monster_count != 0) {
+                gremlinList.add(new Gremlin(spawn_point.getY() * CELLSIZE + gremlin_adjust,
+                        spawn_point.getX() * CELLSIZE + TOPBAR + gremlin_adjust, speed, hp, armour, true, false, false,
+                        this.gremlin_image));
+                monster_count--;
+
+                this.Monster_timer = (wave_duration / monster_quantity) * FPS;
+            }
+        }
+    }
     @Override
     public void draw() {
         background(background_R, background_G, background_B);
@@ -797,12 +845,14 @@ public class App extends PApplet {
                 current_mana_value -= g.hp;
                 g.animation_finished = false;
 
-                if(current_mana_value <= 0) {
+                if(current_mana_value <= 0 && !Lose_condition) {
                     current_mana_value = 0;
                     textSize(50);
-                    text("You Lose!",380,340);
-                    noLoop();
+                    text("You Lose!",300,300);
                     Lose_condition = true;
+                    System.out.println(Lose_condition);
+                    noLoop();
+                    
                 }
                 
             }
@@ -813,27 +863,7 @@ public class App extends PApplet {
         
         
 
-        this.Monster_timer--;
-
-        // 生成Monster List
-        spawn_point = startPoints.get(random.nextInt(startPoints.size()));
-        int gremlin_adjust = (CELLSIZE - gremlin_image.width) / 2; // 这里是6
-        // TODO 目前开始是从0出生的，还不是地图外
-
-        // 这里这个map是控制wave里monsters里面的信息的
-        if (monster_info_map.containsKey(current_wave)) {
-            double hp = (double) (monster_info_map.get(current_wave).get(1));
-            double speed = (double) (monster_info_map.get(current_wave).get(2));
-            double armour = (double) (monster_info_map.get(current_wave).get(3));
-            if (this.Monster_timer < 0 && monster_count != 0) {
-                gremlinList.add(new Gremlin(spawn_point.getY() * CELLSIZE + gremlin_adjust,
-                        spawn_point.getX() * CELLSIZE + TOPBAR + gremlin_adjust, speed, hp, armour, true, false, false,
-                        this.gremlin_image));
-                monster_count--;
-
-                this.Monster_timer = (wave_duration / monster_quantity) * FPS;
-            }
-        }
+        monster_generate();
 
         
 
@@ -847,7 +877,7 @@ public class App extends PApplet {
 
         if(isLastWave && gremlinList.size()==0) {
             textSize(50);
-            text("You Win!",380,340);
+            text("You Win!",300,300);
             noLoop();
         }
     }

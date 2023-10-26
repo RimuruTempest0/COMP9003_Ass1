@@ -25,6 +25,8 @@ public class Topbar extends App {
     public void mana_counter_sub(int sub_value) {
         mana_counter-= sub_value;
     }
+
+    
     public void draw(App app) {
         
         // 画一个盖住上方的bar
@@ -54,11 +56,7 @@ public class Topbar extends App {
         app.rect(mana_box_x, mana_box_y, mana_width, mana_height);
 
         // 画动态，这个mana其实是根据config里面的initial_mana初始的，应该可以在app里面计算然后传过来
-        // if(current_mana_value<initial_mana) {
-        //     current_mana_value = initial_mana_gained_per_second * sec;
-        // } else {
-        //     current_mana_value = initial_mana + initial_mana_gained_per_second * sec;
-        // }
+        
         if(mana_counter<=0) {
             current_mana_value+=initial_mana_gained_per_second;
             mana_counter=60;

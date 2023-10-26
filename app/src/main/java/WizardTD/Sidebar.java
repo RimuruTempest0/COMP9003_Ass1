@@ -13,13 +13,14 @@ public class Sidebar extends App {
     private static int rangeCost = 10;
     private static int speedCost = 10;
     private static int damageCost = 10;
+    private static int manaPoolCost = mana_pool_spell_initial_cost;
     public static Button ffButton = new Button(0,"FF", "2x Speed", 650, 50);
     public static Button pauseButton = new Button(0,"P", "PAUSE", 650, 100);
     public static Button buildTowerButton = new Button(initial_tower_cost,"T", "Build\nTower", 650, 150);
     public static Button upgradeRangeButton = new Button(rangeCost,"U1", "Upgrade\nRange", sideBar_button_x, sideBar_button_y + 150);
     public static Button upgradeSpeedButton = new Button(speedCost,"U2", "Upgrade\nSpeed", sideBar_button_x, sideBar_button_y + 200);
     public static Button upgradeDamageButton = new Button(damageCost,"U3", "Upgrade\nDamage", sideBar_button_x, sideBar_button_y + 250);
-    private Button manaPoolButton = new Button(300,"M", "Mana Pool\nCost: ", sideBar_button_x, sideBar_button_y + 300);
+    public static Button manaPoolButton = new Button(manaPoolCost,"M", "Mana Pool\nCost: "+manaPoolCost, sideBar_button_x, sideBar_button_y + 300);
 
 
     private ArrayList<Tower> tower_list = new ArrayList<>();
@@ -82,6 +83,9 @@ public class Sidebar extends App {
                         tower.mana_subtractor(initial_tower_cost);
                         Place_tower_on_map = !Place_tower_on_map;
                         Build_tower_condition = !Build_tower_condition;
+                    } else {
+                        System.out.println("Insufficient Mana !!!");
+                        Place_tower_on_map = !Place_tower_on_map;
                     }
                 }
             }
@@ -98,7 +102,6 @@ public class Sidebar extends App {
                     costs_board.add("Range cost: "+cost.toString());
                 }
                 tower.drawUpgradePanel(650, 450, 100, 150, costs_board, app);
-                
 
                 Tower tower = point_to_tower.get(tower_Point);
                 if(Deploy_range_upgrade) {
@@ -214,7 +217,20 @@ public class Sidebar extends App {
         }
         //------------------------------Tower Draw END---------------------------------
 
-
+        if(Upgrade_mana_pool_condition) {
+             
+            if(current_mana_value-manaPoolCost >=0) {
+                current_mana_value -= manaPoolCost;
+                initial_mana_cap = (int) (initial_mana_cap*mana_pool_spell_cap_multiplier);
+                manaPoolCost += mana_pool_spell_cost_increase_per_use;
+                manaPoolButton.set_button_cost_and_content(manaPoolCost, "Mana Pool\nCost: "+manaPoolCost);
+                mana_gained_on_kill += mana_gained_on_kill*mana_pool_spell_mana_gained_multiplier;
+                Upgrade_mana_pool_condition = !Upgrade_mana_pool_condition;
+            } else {
+                System.out.println("Insufficient Mana !!!");
+                Upgrade_mana_pool_condition = !Upgrade_mana_pool_condition;
+            }
+        }
         
         
 
@@ -222,23 +238,9 @@ public class Sidebar extends App {
             buildTowerButton.drawCost(app);
         }
 
-        // if (upgradeRangeButton.mouse_on_button(app)) {
-        //     upgradeRangeButton.drawCostValue(app, rangeCost);
-        // }
-
-        // if (upgradeSpeedButton.mouse_on_button(app)) {
-        //     upgradeSpeedButton.drawCostValue(app,speedCost);
-        // }
-
-        // if (upgradeDamageButton.mouse_on_button(app)) {
-        //     upgradeDamageButton.drawCostValue(app, damageCost);
-        // }
-
         if (manaPoolButton.mouse_on_button(app)) {
             manaPoolButton.drawCost(app);
         }
-
-        
 
     }
 }

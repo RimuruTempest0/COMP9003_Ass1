@@ -49,9 +49,7 @@ public class Tower extends App {
      * @param subtract_Cost subtract tower cost
      */
     public void mana_subtractor(int subtract_Cost) {
-        if ((current_mana_value - subtract_Cost) < 0) {
-            System.out.println("Insufficient Mana !!!");
-        } else {
+        if ((current_mana_value - subtract_Cost) >= 0) {
             current_mana_value -= subtract_Cost;
         }
     }
@@ -72,6 +70,10 @@ public class Tower extends App {
         return this.tower_y;
     }
 
+    /**
+     * Set tower image
+     * @param sprite
+     */
     public void setTowerImage(PImage sprite) {
         this.tower_sprite = sprite;
     }
@@ -91,6 +93,7 @@ public class Tower extends App {
         this.tower_y = app.mouseY;
     }
 
+    
     public void upgrade_cost() {
         this.upgrade_count++;
         this.tower_cost += upgrade_count * 20 + initial_tower_cost;

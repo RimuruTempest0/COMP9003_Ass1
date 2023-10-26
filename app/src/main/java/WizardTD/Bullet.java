@@ -65,7 +65,6 @@ public class Bullet extends App{
             
             this.bullet_x += moveX;
             this.bullet_y += moveY;
-            
         }
     }
     
