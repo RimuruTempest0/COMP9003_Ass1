@@ -11,12 +11,13 @@ public class Gremlin extends Monster {
     public int current_frame = 0;
     public int number_frames = 5;
     private int life_bar_width = 20;
-    MyPoint next_point = new MyPoint();
+    private MyPoint next_point = new MyPoint();
     // store each gremlin corresponding path index
-    HashMap<MyPoint, Integer> indexMap = new HashMap<>();
+    private HashMap<MyPoint, Integer> indexMap = new HashMap<>();
     
-    MyPoint spawn_p;
-
+    private MyPoint spawn_p;
+    private double current_speed = this.speed;
+    
     public Gremlin(int monster_x, int monster_y, double speed, double hp, double armour, boolean isAlive, boolean isReachTheWizardhouse, boolean animation_start,
             PImage sprite) {
         super(monster_x, monster_y, speed, hp, armour, isAlive, isReachTheWizardhouse, sprite);
@@ -25,7 +26,7 @@ public class Gremlin extends Monster {
         
     }
 
-    private double current_speed = this.speed;
+    
 
     public void set_gremlin_XY (int x, int y){
         this.monster_x = x;

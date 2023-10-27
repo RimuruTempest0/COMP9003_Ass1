@@ -5,7 +5,7 @@ import java.util.List;
 
 import processing.core.PImage;
 
-public class Tower extends App {
+public class Tower extends App implements FireBullet{
 
     private int tower_x;
     private int tower_y;
@@ -283,6 +283,7 @@ public class Tower extends App {
     /**
      * Generate bullet while tower been valid placecd
      */
+    @Override
     public void set_bullet() {
         this.bullet = new Bullet(this.tower_x+this.tower_sprite.width/2, 
         this.tower_y+this.tower_sprite.width/2, this.tower_damage, bullet_image);
@@ -292,6 +293,7 @@ public class Tower extends App {
      * Control firing rate
      * @param app
      */
+    @Override
     public void fire_bullet(App app) {
         double currentTime = System.currentTimeMillis();
         double since_return_time = currentTime - bullet.return_time;
@@ -322,7 +324,7 @@ public class Tower extends App {
      * @param costs list of seleceted upgrade
      * @param app
      */
-    void drawUpgradePanel(int x, int y, int width, int height, ArrayList<String> costs, App app) {
+    public void drawUpgradePanel(int x, int y, int width, int height, ArrayList<String> costs, App app) {
         // Draw the background rectangle
         app.fill(255); 
         app.stroke(0); 
