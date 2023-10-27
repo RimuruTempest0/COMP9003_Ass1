@@ -96,19 +96,21 @@ public class Sidebar extends App {
             upgradeRangeButton.drawYellow(app);
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
-                Integer cost = (rangeCost);
+                Tower tower = point_to_tower.get(tower_Point);
+                // Integer cost = (rangeCost);
+                Integer cost = tower.getRangeCost();
                 if(!costs_board.contains("Range cost: "+cost.toString())){
                     total_cost+=cost;
                     costs_board.add("Range cost: "+cost.toString());
                 }
                 tower.drawUpgradePanel(650, 450, 100, 150, costs_board, app);
 
-                Tower tower = point_to_tower.get(tower_Point);
+                
                 if(Deploy_range_upgrade) {
                     if(tower.getRangeLevel()<3){
                         tower.upgrade_range();
-                        if(rangeCost<30) {rangeCost += 10;}
-                        tower.mana_subtractor(tower.getRangeLevel()*10);
+                        if(rangeCost<40) {rangeCost += 10;}
+                        tower.mana_subtractor(cost);
                         costs_board.remove("Range cost: "+cost.toString());
                         total_cost=0;
                     }else{
@@ -124,7 +126,8 @@ public class Sidebar extends App {
             upgradeSpeedButton.drawYellow(app);
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
-                Integer cost = (speedCost);
+                Tower tower = point_to_tower.get(tower_Point);
+                Integer cost = (tower.getSpeedCost());
                 if(!costs_board.contains("Speed cost: "+cost.toString())){
                     total_cost+=cost;
                     costs_board.add("Speed cost: "+cost.toString());
@@ -132,12 +135,12 @@ public class Sidebar extends App {
                 tower.drawUpgradePanel(650, 450, 100, 150, costs_board, app);
                 
                 
-                Tower tower = point_to_tower.get(tower_Point);
+                
                 if(Deploy_speed_upgrade) {
                     if(tower.getSpeedLevel()<3){
                         tower.upgrade_speed();
                         if(speedCost<30) {speedCost += 10;}
-                        tower.mana_subtractor(tower.getSpeedLevel()*10);
+                        tower.mana_subtractor(cost);
                         costs_board.remove("Speed cost: "+cost.toString());
                         total_cost = 0;
                     }else{
@@ -153,18 +156,19 @@ public class Sidebar extends App {
             upgradeDamageButton.drawYellow(app);
             MyPoint tower_Point = new MyPoint((app.mouseX / 32) * 32, ((app.mouseY / 32) * 32) - 32 + TOPBAR);
             if(point_to_tower.containsKey(tower_Point)) {
-                Integer cost = (damageCost);
+                Tower tower = point_to_tower.get(tower_Point);
+                Integer cost = (tower.getDamageCost());
                 if(!costs_board.contains("Damage cost: "+cost.toString())){
                     total_cost+=cost;
                     costs_board.add("Damage cost: "+cost.toString());
                 }
                 tower.drawUpgradePanel(650, 450, 100, 150, costs_board, app);
-                Tower tower = point_to_tower.get(tower_Point);
+                
                 if(Deploy_damage_upgrade) {
                     if(tower.getDamageLevel()<3){
                         tower.upgrade_damage();
                         if(damageCost<30) {damageCost += 10;}
-                        tower.mana_subtractor(tower.getDamageLevel()*10);
+                        tower.mana_subtractor(cost);
                         costs_board.remove("Damage cost: "+cost.toString());
                         total_cost = 0;
                     }else{

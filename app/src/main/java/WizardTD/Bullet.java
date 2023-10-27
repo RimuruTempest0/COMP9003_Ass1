@@ -7,7 +7,7 @@ public class Bullet extends App{
     private final int move_distance = 5; //5 Pixels per frame
     private PImage sprite;
     private double bullet_damage;
-    public double lastReturnTime;
+    public double return_time;
 
     public Bullet (int bullet_x, int bullet_y, double bullet_damage, PImage sprite){
         this.bullet_x = bullet_x;
@@ -58,7 +58,7 @@ public class Bullet extends App{
             // reset the bullet to tower
             this.bullet_x = tower_x;
             this.bullet_y = tower_y;
-            this.lastReturnTime = System.currentTimeMillis();
+            this.return_time = System.currentTimeMillis();
         } else {
             double moveX = move_distance * (distanceX / distance);
             double moveY = move_distance * (distanceY / distance);

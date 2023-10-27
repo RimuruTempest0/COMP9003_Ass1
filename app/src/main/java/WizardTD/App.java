@@ -534,6 +534,7 @@ public class App extends PApplet {
                 setup();
                 Lose_condition = false;
                 isLastWave = false;
+                lastWaveFinished = false;
                 current_wave=0;
                 next_wave_index = current_wave + 1;
                 next_wave_display = next_wave_index + 1;
@@ -677,7 +678,7 @@ public class App extends PApplet {
 
     private boolean processWave = true;
     private boolean isLastWave = false;
-    
+    private boolean lastWaveFinished = false;
     /**
      * Control wave state change
      */
@@ -751,6 +752,7 @@ public class App extends PApplet {
             // TODO 在这里处理最后一个wave的逻辑，不显示wave和startsIn
             next_wave_pause = 5;
             isLastWave = true;
+            
         } else {
             // 提取下一波wave的duration
             JSONObject next_wave = waves.getJSONObject(next_wave_index);
@@ -822,10 +824,14 @@ public class App extends PApplet {
                 image(mapTile[i][j], j * 32, i * 32 + 40); // 在对应的位置绘制图片
             }
         }
-        image(wizardImage, wizard_house_display_y, wizard_house_display_x);
+        
         // 在wave_change()里，每次wave更变，处理monster的更变
         wave_change();
-        
+        if(isLastWave) {
+                if(startsIn<=0){
+                    lastWaveFinished = true;
+                }
+            }
         for (int x=0; x<gremlinList.size(); x++) {
             Gremlin g = gremlinList.get(x);
             
@@ -848,13 +854,11 @@ public class App extends PApplet {
                 if(current_mana_value <= 0 && !Lose_condition) {
                     current_mana_value = 0;
                     textSize(50);
-                    text("You Lose!",300,300);
+                    fill(240,10,169);
+                    text("You Lose!\nPress 'r' to Restart",100,300);
                     Lose_condition = true;
-                    System.out.println(Lose_condition);
                     noLoop();
-                    
                 }
-                
             }
             
             g.tick();
@@ -864,7 +868,7 @@ public class App extends PApplet {
         
 
         monster_generate();
-
+        image(wizardImage, wizard_house_display_y, wizard_house_display_x);
         
 
         topbar.draw(this);
@@ -875,7 +879,8 @@ public class App extends PApplet {
                 gremlinList.remove(gremlin);
         }
 
-        if(isLastWave && gremlinList.size()==0) {
+        if(isLastWave && gremlinList.size()==0 && lastWaveFinished) {
+            fill(240,10,169);
             textSize(50);
             text("You Win!",300,300);
             noLoop();

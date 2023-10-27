@@ -20,8 +20,9 @@ public class Tower extends App {
     private int upgrade_count = 0;
 
     private int tower_cost;
-    // private int range_cost;
-    // private int speed_cost;
+    private int range_cost = 20;
+    private int speed_cost = 20;
+    private int damage_cost = 20;
 
     private PImage tower_sprite;
     private Bullet bullet;
@@ -54,6 +55,10 @@ public class Tower extends App {
         }
     }
 
+    /**
+     * Set the tower cost
+     * @param cost cost value
+     */
     public void set_tower_cost(int cost) {
         this.tower_cost = cost;
     }
@@ -93,16 +98,21 @@ public class Tower extends App {
         this.tower_y = app.mouseY;
     }
 
-    
+    /**
+     * Upgrade tower cost
+     */
     public void upgrade_cost() {
         this.upgrade_count++;
         this.tower_cost += upgrade_count * 20 + initial_tower_cost;
     }
 
+    /**
+     * Upgrade tower range
+     */
     public void upgrade_range() {
         this.tower_range += App.CELLSIZE;
         this.range_level++;
-        // this.range_cost += 10;
+        this.range_cost += 10;
         upgrade_cost();
     }
 
@@ -110,10 +120,16 @@ public class Tower extends App {
         return this.range_level;
     }
 
+    public int getRangeCost() {
+        return this.range_cost;
+    }
+    /**
+     * Upgrade tower speed
+     */
     public void upgrade_speed() {
         this.tower_firing_speed -= 0.5;
         this.speed_level++;
-        // this.speed_cost += 10;
+        this.speed_cost += 10;
         upgrade_cost();
     }
 
@@ -121,12 +137,19 @@ public class Tower extends App {
         return this.speed_level;
     }
 
-  
+    public int getSpeedCost() {
+        return this.speed_cost;
+    }
 
+  
+    /**
+     * Upgrade tower damage
+     */
     public void upgrade_damage() {
         this.tower_damage = this.tower_damage-(tower_damage / 2);
         this.damage_level++;
         this.bullet.update_damage(this.tower_damage);
+        this.damage_cost += 10;
         upgrade_cost();
     }
    
@@ -135,6 +158,15 @@ public class Tower extends App {
         return this.damage_level;
     }
 
+    public int getDamageCost() {
+        return this.damage_cost;
+    }
+
+    /**
+     * Draw tower range upgrade mark
+     * @param app
+     * @param level current range level
+     */
     public void draw_O(App app, int level) {
         app.fill(243, 10, 169);
         app.textSize(10);
@@ -143,6 +175,11 @@ public class Tower extends App {
         }
     }
 
+    /**
+     * Draw tower damage upgrade mark
+     * @param app
+     * @param level current damage level
+     */
     public void draw_X(App app, int level) {
         app.fill(243, 10, 169);
         app.textSize(10);
@@ -151,23 +188,37 @@ public class Tower extends App {
         }
     }
 
+    /**
+     * Draw tower speed upgrade mark
+     * @param app
+     * @param level current speed level
+     */
     public void draw_square(App app, int level) {
-        app.noFill(); // 不填充颜色
-        app.stroke(10, 161, 243); // 设置边框颜色为蓝色
+        app.noFill();
+        app.stroke(10, 161, 243);
         app.strokeWeight(level);
         app.rect(this.tower_x + 5, this.tower_y + 5, 20, 20);
         app.strokeWeight(1);
     }
 
+    /**
+     * Draw tower firing range ellipse
+     * @param app
+     */
     public void draw_range(App app) {
-        app.noFill(); // 不填充颜色
-        app.stroke(10, 240, 60); // 设置边框颜色为蓝色
+        app.noFill();
+        app.stroke(10, 240, 60);
         app.strokeWeight(1);
         app.ellipse((float) (this.tower_x + this.tower_sprite.width / 2),
                 (float) (this.tower_y + this.tower_sprite.height / 2),
                 (float) this.tower_range*2, (float) this.tower_range*2);
     }
 
+    /**
+     * Detect whether cursor on tower
+     * @param app
+     * @return Yes if cursor on tower, vice versa
+     */
     public boolean mouse_on_tower(App app) {
         int mouse_X = app.mouseX;
         int mouse_Y = app.mouseY;
@@ -181,6 +232,11 @@ public class Tower extends App {
         return false;
     }
 
+    /**
+     * Detect whether tower on map area and on grass tile
+     * @param app
+     * @return True if on valid tile to place tower
+     */
     public boolean valid_place_tower(App app) {
         int tower_grid_x = (this.tower_y - TOPBAR) / 32;
         int tower_grid_y = this.tower_x / 32;
@@ -195,60 +251,58 @@ public class Tower extends App {
         return false;
     }
 
+    /**
+     * Calculate the shortest distance between gremlin and tower
+     * @param gremlinList A list store all generated gremlin
+     * @return The shortest gremlin
+     */
     public Gremlin getClosestMonsterInRange(List<Gremlin> gremlinList) {
-        Gremlin closestMonster = null;
-        double closestDistance = Double.MAX_VALUE;
+        Gremlin closest_gremlin = null;
+        double closest_distance = Double.MAX_VALUE;
 
         for (Gremlin g : gremlinList) {
-            // 获取塔和怪物的位置
+            // store the distance of monster and tower
             int towerX = this.tower_x + this.tower_sprite.width / 2;
             int towerY = this.tower_y + this.tower_sprite.width / 2;
             int monsterX = g.monster_x + g.get_sprite_width()/2;
             int monsterY = g.monster_y + g.get_sprite_width()/2;
 
-            // 计算塔和怪物之间的距离
+            // calculate the Euclidean Distance between gremlin and tower
             double distance = Math.sqrt(Math.pow(monsterX - towerX, 2) + Math.pow(monsterY - towerY, 2));
 
-            // 如果怪物在塔的射程内并且距离比当前找到的距离更近，那么更新最近的怪物和距离
-            if (distance < this.tower_range && distance < closestDistance) {
-                closestMonster = g;
-                closestDistance = distance;
+            // swap closest monster with shorter one  
+            if (distance < this.tower_range && distance < closest_distance) {
+                closest_gremlin = g;
+                closest_distance = distance;
             }
         }
 
-        return closestMonster;
+        return closest_gremlin;
     }
 
+    /**
+     * Generate bullet while tower been valid placecd
+     */
     public void set_bullet() {
         this.bullet = new Bullet(this.tower_x+this.tower_sprite.width/2, 
         this.tower_y+this.tower_sprite.width/2, this.tower_damage, bullet_image);
     }
-
-    // public void fire_bullet(App app) {
-    //      Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
-    //      int towerX = this.tower_x + this.tower_sprite.width / 2;
-    //      int towerY = this.tower_y + this.tower_sprite.width / 2;
-    //     if (closestGremlin != null) {
-            
-    //         bullet.moveToMonster(closestGremlin, towerX, towerY);
-    //     } else {
-    //         bullet.setBulletXY(towerX, towerY);
-    //     }
-
-    //     bullet.draw(app);
-    // }
     
+    /**
+     * Control firing rate
+     * @param app
+     */
     public void fire_bullet(App app) {
         double currentTime = System.currentTimeMillis();
-        double timeSinceLastReturn = currentTime - bullet.lastReturnTime;
+        double since_return_time = currentTime - bullet.return_time;
 
-        // 检查是否已经过了1500毫秒（1.5秒）
-        if (timeSinceLastReturn >= this.tower_firing_speed*1000) {
-            // System.out.println(this.tower_firing_speed*1000);
+        // check if the timer passes 1.5 seconds
+        if (since_return_time >= this.tower_firing_speed*1000) {
             Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
             int towerX = this.tower_x + this.tower_sprite.width / 2;
             int towerY = this.tower_y + this.tower_sprite.width / 2;
 
+            // if there is a closest gremlin, firing the bullet
             if (closestGremlin != null) {
                 bullet.moveToMonster(closestGremlin, towerX, towerY);
             } else {
@@ -259,14 +313,23 @@ public class Tower extends App {
         }
     }
     
+    /**
+     * Draw right down corner upgrade panel
+     * @param x panel coordinate x
+     * @param y panel coordinate y
+     * @param width panel width
+     * @param height panel height
+     * @param costs list of seleceted upgrade
+     * @param app
+     */
     void drawUpgradePanel(int x, int y, int width, int height, ArrayList<String> costs, App app) {
         // Draw the background rectangle
-        app.fill(255); // White color
-        app.stroke(0); // Black border
+        app.fill(255); 
+        app.stroke(0); 
         app.rect(x, y, width, height);
         
         // Draw the title
-        app.fill(0); // Black color
+        app.fill(0); 
         app.textSize(12);
         app.text("Upgrade Cost", x+5, y +18);
         
@@ -282,16 +345,12 @@ public class Tower extends App {
                 app.text("Total: " + Sidebar.total_cost, x + 5, y + 70 + i * 30);
             }
         }
-
-        
-        
       }
 
     public void draw(App app) {
 
         if (mouse_on_tower(app)) {
             draw_range(app);
-
         }
         app.image(this.tower_sprite, this.tower_x, this.tower_y);
     }
