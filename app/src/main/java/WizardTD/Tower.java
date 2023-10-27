@@ -264,11 +264,11 @@ public class Tower extends App implements FireBullet{
             // store the distance of monster and tower
             int towerX = this.tower_x + this.tower_sprite.width / 2;
             int towerY = this.tower_y + this.tower_sprite.width / 2;
-            int monsterX = g.monster_x + g.get_sprite_width()/2;
-            int monsterY = g.monster_y + g.get_sprite_width()/2;
+            int gremlinX = g.monster_x + g.get_sprite_width()/2;
+            int gremlinY = g.monster_y + g.get_sprite_width()/2;
 
             // calculate the Euclidean Distance between gremlin and tower
-            double distance = Math.sqrt(Math.pow(monsterX - towerX, 2) + Math.pow(monsterY - towerY, 2));
+            double distance = Math.sqrt(Math.pow(gremlinX - towerX, 2) + Math.pow(gremlinY - towerY, 2));
 
             // swap closest monster with shorter one  
             if (distance < this.tower_range && distance < closest_distance) {

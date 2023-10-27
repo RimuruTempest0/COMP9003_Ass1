@@ -47,12 +47,12 @@ public class Bullet extends App{
      */
     public void moveToMonster(Gremlin gremlin, int tower_x, int tower_y) {
         // Calculate the monster central point
-        int monsterCenterX = gremlin.monster_x + gremlin.get_sprite_width() / 2;
-        int monsterCenterY = gremlin.monster_y + gremlin.get_sprite_height() / 2;
+        int gremlin_centre_X = gremlin.monster_x + gremlin.get_sprite_width() / 2;
+        int gremlin_centre_Y = gremlin.monster_y + gremlin.get_sprite_height() / 2;
     
-        double distanceX = monsterCenterX - this.bullet_x;
-        double distanceY = monsterCenterY - this.bullet_y;
-        double distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        double distance_x = gremlin_centre_X - this.bullet_x;
+        double distance_y = gremlin_centre_Y - this.bullet_y;
+        double distance = Math.sqrt(distance_x * distance_x + distance_y * distance_y);
         
         if (distance <= move_distance) { 
             gremlin.hitted(this.bullet_damage);
@@ -62,8 +62,8 @@ public class Bullet extends App{
             this.bullet_y = tower_y;
             this.return_time = System.currentTimeMillis();
         } else {
-            double moveX = move_distance * (distanceX / distance);
-            double moveY = move_distance * (distanceY / distance);
+            double moveX = move_distance * (distance_x / distance);
+            double moveY = move_distance * (distance_y / distance);
             
             this.bullet_x += moveX;
             this.bullet_y += moveY;
