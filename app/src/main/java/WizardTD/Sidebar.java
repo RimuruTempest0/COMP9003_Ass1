@@ -31,7 +31,8 @@ public class Sidebar extends App {
     private ArrayList<String> costs_board = new ArrayList<String>();
     public static int total_cost = 0;
     public void draw(App app) {
-        // 先画一个大的矩形，要盖住右侧出生的小兵, Right bar
+        
+        // draw right bar rectangle
         int sideBar_Cover_Height = CELLSIZE * BOARD_WIDTH;
         app.stroke(background_R, background_G, background_B);
         app.fill(background_R, background_G, background_B);
@@ -48,7 +49,6 @@ public class Sidebar extends App {
         upgradeDamageButton.draw(app);
         manaPoolButton.draw(app);
 
-        // 当鼠标在按钮上，按下mousePressed后，变为黄色
         if (FF_press_condition) 
         {
             ffButton.drawYellow(app);
@@ -184,7 +184,6 @@ public class Sidebar extends App {
             if (tower_to_point.size() != 0 && point_to_tower.size() != 0) {
                 int x = tower_to_point.get(tower).getX();
                 int y = tower_to_point.get(tower).getY();
-                // MyPoint curTowerTpoint = new MyPoint(x, y);
                 
                 
                 if(tower.getDamageLevel() >= 2 && tower.getRangeLevel() >= 2 && tower.getSpeedLevel() >= 2)

@@ -298,13 +298,13 @@ public class Tower extends App {
 
         // check if the timer passes 1.5 seconds
         if (since_return_time >= this.tower_firing_speed*1000) {
-            Gremlin closestGremlin = getClosestMonsterInRange(gremlinList);
+            Gremlin closest_gremlin = getClosestMonsterInRange(gremlinList);
             int towerX = this.tower_x + this.tower_sprite.width / 2;
             int towerY = this.tower_y + this.tower_sprite.width / 2;
 
             // if there is a closest gremlin, firing the bullet
-            if (closestGremlin != null) {
-                bullet.moveToMonster(closestGremlin, towerX, towerY);
+            if (closest_gremlin != null) {
+                bullet.moveToMonster(closest_gremlin, towerX, towerY);
             } else {
                 bullet.setBulletXY(towerX, towerY);
             }

@@ -12,7 +12,7 @@ public class Gremlin extends Monster {
     public int number_frames = 5;
     private int life_bar_width = 20;
     MyPoint next_point = new MyPoint();
-    // 每个Monster存储对应的路线迭代index
+    // store each gremlin corresponding path index
     HashMap<MyPoint, Integer> indexMap = new HashMap<>();
     
     MyPoint spawn_p;
@@ -86,8 +86,6 @@ public class Gremlin extends Monster {
         double current_hp = Math.abs(this.hp-damage_take*this.armour);
         double ratio = current_hp/this.hp*20;
         this.hp=current_hp;
-        // double sub_width = this.hp / this.hp * life_bar_width;
-        // life_bar_width-= (int) sub_width;
         life_bar_width-=ratio;
     }
 
@@ -97,7 +95,7 @@ public class Gremlin extends Monster {
      * Gremlin moving logic
      */
     public void tick() {
-        // TODO 这里写死亡状态检测
+        // monster dead condition
         if (this.monster_x == wizard_house_y * CELLSIZE + 6
                 && this.monster_y == wizard_house_x * CELLSIZE + TOPBAR + 6 ) {
             this.isAlive = false;
@@ -107,8 +105,7 @@ public class Gremlin extends Monster {
             this.isAlive = false;
             this.animation_start = true;
         } else{
-            // 判断上下左右走，用当前Point.get(x,y)于下一个Point.get(x,y)判断
-            // 判断下一个Point的x还是y相等，然后判断x y的大小
+            // check move which direction, use the current Point.get(x,y) and next Point.get(x,y)
             for (int x = 0; x < startPoints.size(); x++) {
                 MyPoint spawn = startPoints.get(x);
                 if (!indexMap.containsKey(spawn)) {
@@ -160,11 +157,6 @@ public class Gremlin extends Monster {
 
             // Double the monster speed
             if (FF_press_condition) {
-                /*
-                 * 人物运动加速
-                 * wave倒计时加速
-                 * mana条加速
-                 */
                 for (Gremlin g : gremlinList) {
                     g.FF_speed();
                 }
@@ -187,21 +179,16 @@ public class Gremlin extends Monster {
 
     public void draw(App app) {
 
-        /*
-         * 要想让monster在path上走，
-         * 我想需要在处理map的时候，存储了'X'的坐标，
-         * 然后monster移动的时候就跟随存储的‘X’的x和y
-         */
         if (isAlive) {
             // Gremlin red life bar
             app.noFill();
-            app.stroke(255, 0, 0); // 设置边框颜色为红色
+            app.stroke(255, 0, 0); 
             app.strokeWeight(2);
             app.rect(this.monster_x, this.monster_y - 10, 20, 3);
 
             // Gremlin green life bar
             app.noFill();
-            app.stroke(10, 240, 60); // 设置边框颜色为绿色
+            app.stroke(10, 240, 60);
             app.strokeWeight(2);
             app.rect(this.monster_x, this.monster_y - 10, life_bar_width, 3);
 

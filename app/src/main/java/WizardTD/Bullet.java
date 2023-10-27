@@ -4,7 +4,7 @@ import processing.core.PImage;
 public class Bullet extends App{
     private int bullet_x;
     private int bullet_y;
-    private final int move_distance = 5; //5 Pixels per frame
+    private  int move_distance = 5; //5 Pixels per frame
     private PImage sprite;
     private double bullet_damage;
     public double return_time;
@@ -37,6 +37,8 @@ public class Bullet extends App{
         this.bullet_damage = damage;
     }
 
+    
+
     /**
      * Control the bullet move to a target monster
      * @param gremlin targe monster object
@@ -52,9 +54,9 @@ public class Bullet extends App{
         double distanceY = monsterCenterY - this.bullet_y;
         double distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         
-        if (distance <= move_distance) { // 如果子弹非常靠近怪物
+        if (distance <= move_distance) { 
             gremlin.hitted(this.bullet_damage);
-            // 重置子弹位置到塔
+            
             // reset the bullet to tower
             this.bullet_x = tower_x;
             this.bullet_y = tower_y;

@@ -32,6 +32,9 @@ public class App extends PApplet {
 
     public Random random = new Random();
 
+    /**
+     * Variables used for map draw and BFS
+     */
     public PImage[][] mapTile = new PImage[20][20];;
     public static char[][] Map_Grid;
 
@@ -46,6 +49,90 @@ public class App extends PApplet {
 
     public static HashMap<MyPoint, ArrayList<MyPoint>> shortest_Paths = new HashMap<>();
     public static ArrayList<MyPoint> startPoints = new ArrayList<>();
+
+    /**
+     * Variables used for button conditions
+     */
+    public static boolean FF_press_condition = false;
+    public static boolean Pause_press_condition = false;
+    public static boolean Build_tower_condition = false;
+    public static boolean Place_tower_on_map = false;
+    public static boolean Upgrade_mana_pool_condition = false;
+
+    public static boolean Upgrade_range_condition = false;
+    public static boolean Upgrade_speed_condition = false;
+    public static boolean Upgrade_damage_condition = false;
+
+    public static boolean Deploy_range_upgrade = false;
+    public static boolean Deploy_speed_upgrade = false;
+    public static boolean Deploy_damage_upgrade = false;
+    public static boolean Lose_condition = false;
+    public static String mouse_on_which_button;
+
+
+    /**
+     * Variables used for wave information and monster 
+     */
+    public static int initial_mana;
+    public static int initial_mana_cap;
+    public static int initial_mana_gained_per_second;
+    public static int current_mana_value; // assign value in topbar
+    public static int mana_pool_spell_initial_cost;
+    public static int mana_pool_spell_cost_increase_per_use;
+    public static double mana_pool_spell_cap_multiplier;
+    public static double mana_pool_spell_mana_gained_multiplier;
+
+
+    public static double initial_tower_range;
+    public static double initial_tower_firing_speed;
+    public static int initial_tower_damage;
+    public static int initial_tower_cost;
+
+    public static JSONArray waves;
+
+    private PImage gremlin_image;
+    protected static PImage tower_0_image;
+    protected static PImage tower_1_image;
+    protected static PImage tower_2_image;
+    protected static PImage bullet_image;
+    private HashMap<Integer, PImage> tower_image_map = new HashMap<>();
+
+    private double next_wave_pause;
+
+    public static double wave_duration;
+    public static double pre_wave_pause;
+
+    public static ArrayList<Gremlin> gremlinList = new ArrayList<>();
+    public static ArrayList<Gremlin> death_gremlin_index = new ArrayList<>();
+    private HashMap<Integer, ArrayList<Object>> monster_info_map = new HashMap<>();
+    public static PImage[] gremlin_dead = new PImage[5];
+
+    public static String monster_type;
+    public static double monster_hp;
+    public static double monster_speed;
+    public static double monster_armour;
+    public static int mana_gained_on_kill;
+    public static double monster_quantity;
+    public double monster_count;
+
+    private double Monster_timer;
+    public static MyPoint spawn_point;
+
+    // change wave while startsIn is 0
+    private int startTime;
+    private int startsIn;
+
+    public int getStartIn() {
+        return startsIn;
+    }
+
+    private int current_wave = 0;
+    private int next_wave_index = current_wave + 1;
+    public int next_wave_display = next_wave_index + 1;
+
+    private boolean processWave = true;
+    private boolean isLastWave = false;
+    private boolean lastWaveFinished = false;
 
 
     /**
@@ -104,14 +191,14 @@ public class App extends PApplet {
         try {
             up = backGroundArray[upX][y];
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("上边界出界: " + upX + " " + y);
+            System.out.println("Upper bound out: " + upX + " " + y);
             startPoints.add(new MyPoint(upX + 1, y));
             up = 'X';
         }
         try {
             down = backGroundArray[downX][y];
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("下边界出界： " + downX + " " + y);
+            System.out.println("Lower bound out: " + downX + " " + y);
             startPoints.add(new MyPoint(downX, y));
             down = 'X';
 
@@ -119,23 +206,23 @@ public class App extends PApplet {
         try {
             left = backGroundArray[x][leftY];
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("左边界出界: " + x + " " + leftY);
+            System.out.println("Left bound out: " + x + " " + leftY);
             startPoints.add(new MyPoint(x, leftY + 1));
             left = 'X';
         }
         try {
             right = backGroundArray[x][rightY];
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("右边界出界： " + x + " " + rightY);
+            System.out.println("Right bound out： " + x + " " + rightY);
             startPoints.add(new MyPoint(x, rightY));
             right = 'X';
         }
 
 
-        // 计算上下左右总值
+        // calculate the around total value
         int fourValue = (int) up + (int) down + (int) left + (int) right;
 
-        // 上草下路用右拐
+        // UP gradd DOWN path
         if (down == 'X' && left == 'X' && up != 'X' && right != 'X') {
             return 1;
         }
@@ -149,7 +236,7 @@ public class App extends PApplet {
             return 13;
         }
 
-        // T字路：单面为Shrub或者Grass
+        // 'T' path, opposite direction is Shrub or Grass
         int T_road1 = 296;
         int T_road2 = 347;
         if (fourValue == T_road1 || fourValue == T_road2) {
@@ -167,13 +254,13 @@ public class App extends PApplet {
             }
 
         }
-        // 四周是草用十字路
+        // 'Cross Path', around are grass
         int cross_road = 352;
         if (fourValue == cross_road) {
             return 3;
         }
 
-        // 上下为路，左右不为路的时候，转path0 90度
+        // UP and DOWN are path, LEFT and RIGHT are not path, rotate the original path 90 degree
         if ((up == 'X' || down == 'X') && left != 'X' && right != 'X') {
             return 101;
         }
@@ -295,32 +382,6 @@ public class App extends PApplet {
      * player, enemies and map elements.
      */
 
-    public static int initial_mana;
-    public static int initial_mana_cap;
-    public static int initial_mana_gained_per_second;
-    public static int current_mana_value; // 这个变量在Topbar里赋值
-    public static int mana_pool_spell_initial_cost;
-    public static int mana_pool_spell_cost_increase_per_use;
-    public static double mana_pool_spell_cap_multiplier;
-    public static double mana_pool_spell_mana_gained_multiplier;
-
-
-    public static double initial_tower_range;
-    public static double initial_tower_firing_speed;
-    public static int initial_tower_damage;
-    public static int initial_tower_cost;
-
-    public static JSONArray waves;
-
-    private PImage gremlin_image;
-    protected static PImage tower_0_image;
-    protected static PImage tower_1_image;
-    protected static PImage tower_2_image;
-    protected static PImage bullet_image;
-    private HashMap<Integer, PImage> tower_image_map = new HashMap<>();
-
-    public static PImage[] gremlin_dead = new PImage[5];
-
     /**
      * Back trace to find the shortest path
      * @param pair father nodes and children nodes
@@ -345,8 +406,6 @@ public class App extends PApplet {
      * @param destination path end point
      * @return a list of points with visited
      */
-    // ------------------------------------BFS
-    // start------------------------------------
     private ArrayList<MyPoint> BreadthFirstSearch(MyPoint start, MyPoint destination) {
         
         LinkedList<MyPoint> queue = new LinkedList<>();
@@ -354,7 +413,7 @@ public class App extends PApplet {
 
         boolean route_found = false;
 
-        // (children, parent)
+        // (children node, parent node)
         HashMap<MyPoint, MyPoint> pair = new HashMap<>();
 
         queue.addLast(start);
@@ -404,16 +463,15 @@ public class App extends PApplet {
         }
 
         if (!route_found) {
-            System.out.println("Route not found");
+            System.out.println("Path not found");
             return null;
         } else {
-            System.out.println("Route found");
+            System.out.println("Path found");
         }
 
         return findShortestPath(pair, start, destination);
     }
-    // ------------------------------------BFS
-    // end------------------------------------
+    
 
     @Override
     public void setup() {
@@ -440,7 +498,7 @@ public class App extends PApplet {
         mana_pool_spell_mana_gained_multiplier = gameJson.getDouble("mana_pool_spell_mana_gained_multiplier");
 
         current_mana_value = initial_mana;
-        // 读取wave内容
+        // read wave data
         waves = gameJson.getJSONArray("waves");
 
         topbar = new Topbar();
@@ -451,16 +509,11 @@ public class App extends PApplet {
             gremlin_dead[x] = loadImage("src/main/resources/WizardTD/gremlin" + (x + 1) + ".png");
         }
 
-        // 存储最短路径
+        // store the shortest path
         MyPoint end = new MyPoint(wizard_house_x, wizard_house_y);
         for (int x = 0; x < startPoints.size(); x++) {
             MyPoint start = startPoints.get(x);
             shortest_Paths.put(start, BreadthFirstSearch(start, end));
-
-            // 如果是左右出生，需要加TOPBAR+上下6
-            // 如果上下出生，只需要左右+6
-            // monsterList.add(new
-            // Gremlin(start.getY()*CELLSIZE,start.getX()*CELLSIZE+TOPBAR+6,true,false));
             System.out.println("Monster adds at: " + (start.getY() * CELLSIZE) + " " + (start.getX() * CELLSIZE));
         }
 
@@ -483,21 +536,7 @@ public class App extends PApplet {
 
     }
 
-    public static boolean FF_press_condition = false;
-    public static boolean Pause_press_condition = false;
-    public static boolean Build_tower_condition = false;
-    public static boolean Place_tower_on_map = false;
-    public static boolean Upgrade_mana_pool_condition = false;
-
-    public static boolean Upgrade_range_condition = false;
-    public static boolean Upgrade_speed_condition = false;
-    public static boolean Upgrade_damage_condition = false;
-
-    public static boolean Deploy_range_upgrade = false;
-    public static boolean Deploy_speed_upgrade = false;
-    public static boolean Deploy_damage_upgrade = false;
-    public static boolean Lose_condition = false;
-    public static String mouse_on_which_button;
+    
 
     /**
      * Receive key pressed signal from the keyboard.
@@ -640,59 +679,13 @@ public class App extends PApplet {
     }
 
 
-    /**
-     * 
-     * initialize wave variables
-     * 提取wave信息
-     */
-    private double next_wave_pause;
-
-    public static double wave_duration;
-    public static double pre_wave_pause;
-
-    public static ArrayList<Gremlin> gremlinList = new ArrayList<>();
-    public static ArrayList<Gremlin> death_gremlin_index = new ArrayList<>();
-    private ArrayList<ArrayList<Monster>> big_monsterList = new ArrayList<>();
-
-    public static String monster_type;
-    public static double monster_hp;
-    public static double monster_speed;
-    public static double monster_armour;
-    public static int mana_gained_on_kill;
-    public static double monster_quantity;
-    public double monster_count;
-
-    private double Monster_timer;
-    // 更换wave的时机就是duration(startsIn)减为0
-    private int startTime;
-    private int startsIn;
-
-    public int getStartIn() {
-        return startsIn;
-    }
-
-    private int current_wave = 0;
-    private int next_wave_index = current_wave + 1;
-    // 这里的next_wave_display别改成static，我在Topbar里面用"App."调用了
-    public int next_wave_display = next_wave_index + 1;
-
-    private boolean processWave = true;
-    private boolean isLastWave = false;
-    private boolean lastWaveFinished = false;
+    
     /**
      * Control wave state change
      */
     public void wave_change() {
-        // int current_wave=0; 从0 wave 开始
-
-        /*
-         * 这里顺序不可变，先提取current_wave=0的信息，
-         * 然后，next_wave_duration里面才有值，
-         * 进而，才能计算startsIn
-         * 之后，才能判断是否要change_wave
-         */
-
-        // 先提取 current_wave=0 的信息
+        
+        // extract information when current_wave = 0 
         if (processWave) {
             process_wave(current_wave);
 
@@ -705,38 +698,37 @@ public class App extends PApplet {
             processWave = false;
         }
 
-        // 计算 startsIn 时间
+        // calculate startsIn time
         int counter_speed = 1000;
-        int sec = 0; // 从 startTime 以来经过的秒数
-        // TODO 倒计时无法衔接起来
+        int secondScienceStartTime = 0;
+        // TODO count down cannot hook up
         if (FF_press_condition) {
             counter_speed = 500;
-            sec = (int) ((millis() - startTime) / counter_speed);
+            secondScienceStartTime = (int) ((millis() - startTime) / counter_speed);
         } else {
            counter_speed = 1000;
-           sec = (int) ((millis() - startTime) / counter_speed);
+           secondScienceStartTime = (int) ((millis() - startTime) / counter_speed);
         }
         
         
         
-        startsIn = (int) (next_wave_pause - sec); // 计算倒计时
+        startsIn = (int) (next_wave_pause - secondScienceStartTime); // calculate the timer
         if (startsIn <= 0) {
-            // 重置 startTime
+            // reset the startTime
             startTime = millis();
         }
 
-        // 达到要求，更换wave
+        // change wave
         if (current_wave < waves.size() - 1 && startsIn <= 0) {
             current_wave++;
             next_wave_index++;
             next_wave_display++;
             processWave = true;
-            // System.out.println(monsterList.size());
         }
 
     }
 
-    private HashMap<Integer, ArrayList<Object>> monster_info_map = new HashMap<>();
+    
 
     /**
      * Extract data from wave
@@ -747,21 +739,20 @@ public class App extends PApplet {
         wave_duration = wave.getInt("duration");
         pre_wave_pause = wave.getDouble("pre_wave_pause");
 
-        // 如果当前wave+1超过size，也就是最后一个wave
+        // if current wave + 1 is bigger than the wave size, then it is the last wave
         if (cur_wave + 1 >= waves.size()) {
-            // TODO 在这里处理最后一个wave的逻辑，不显示wave和startsIn
+            // last wave detect
             next_wave_pause = 5;
             isLastWave = true;
             
         } else {
-            // 提取下一波wave的duration
+            // extract duration of next wave
             JSONObject next_wave = waves.getJSONObject(next_wave_index);
             next_wave_pause = next_wave.getInt("pre_wave_pause");
         }
 
-        // 提取monsters信息
+        // extract monster information
         JSONArray monsters = wave.getJSONArray("monsters");
-        // monsters.size(): 第三波正常：2
         ArrayList<Object> one_wave_monster = new ArrayList<>();
         for (Integer j = 0; j < monsters.size(); j++) {
             JSONObject monster = monsters.getJSONObject(j);
@@ -787,17 +778,15 @@ public class App extends PApplet {
      * Draw all elements in the game by current frame.
      * draw() will be called once every second.
      */
-    public static MyPoint spawn_point;
-
     private void monster_generate() {
         this.Monster_timer--;
 
-        // 生成Monster List
+        // generate gremlin list
         spawn_point = startPoints.get(random.nextInt(startPoints.size()));
-        int gremlin_adjust = (CELLSIZE - gremlin_image.width) / 2; // 这里是6
-        // TODO 目前开始是从0出生的，还不是地图外
+        int gremlin_adjust = (CELLSIZE - gremlin_image.width) / 2; // 6 here
+        // TODO start from 0, not beyond the map
 
-        // 这里这个map是控制wave里monsters里面的信息的
+        // extract information from monster in wave
         if (monster_info_map.containsKey(current_wave)) {
             double hp = (double) (monster_info_map.get(current_wave).get(1));
             double speed = (double) (monster_info_map.get(current_wave).get(2));
@@ -816,16 +805,13 @@ public class App extends PApplet {
     public void draw() {
         background(background_R, background_G, background_B);
 
-        // 如果在setUp设置fill，那么就意味着在整个程序运行后，他都只能执行这个fill
-
-        // 画地图和wizard_house
+        // draw map and wizardhouse
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 20; j++) {
-                image(mapTile[i][j], j * 32, i * 32 + 40); // 在对应的位置绘制图片
+                image(mapTile[i][j], j * 32, i * 32 + 40);
             }
         }
         
-        // 在wave_change()里，每次wave更变，处理monster的更变
         wave_change();
         if(isLastWave) {
                 if(startsIn<=0){
@@ -835,20 +821,20 @@ public class App extends PApplet {
         for (int x=0; x<gremlinList.size(); x++) {
             Gremlin g = gremlinList.get(x);
             
-            // 被打死
-            if (!g.isAlive && g.animation_finished) { // 检查怪物是否死亡且动画是否完成
+            // been killed
+            if (!g.isAlive && g.animation_finished) { // check whether gremlin is dead and animation finished
                 death_gremlin_index.add(g);
                 
-                if (!g.isReachTheWizardhouse) { // 如果怪物没有到达巫师的房子，则增加 mana
+                if (!g.isReachTheWizardhouse) { // gain mana if been killed
                     current_mana_value += mana_gained_on_kill;
                     g.animation_finished = false;
                 }
             }
             
-            // 撞到house
-            if (g.isReachTheWizardhouse && g.animation_finished) { // 如果怪物到达了巫师的房子且动画完成
+            // collide with wizard house
+            if (g.isReachTheWizardhouse && g.animation_finished) { 
                 death_gremlin_index.add(g);
-                current_mana_value -= g.hp;
+                current_mana_value -= g.hp; // lose mana if collide with wizard house
                 g.animation_finished = false;
 
                 if(current_mana_value <= 0 && !Lose_condition) {
