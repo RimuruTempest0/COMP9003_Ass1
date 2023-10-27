@@ -1,20 +1,20 @@
-XX             SS  S
- XS S S  S S  S     
- X      S   S  SS SX
-XXXXW         S  XXX
-  S X   S  S     XSX
+ X      X      SS  S
+ XS S S XS S  S     
+ X      X   S  SS S 
+XXXXX   X     S     
+  S X   X  S      S 
   SXXXXXXXXXXXXXXXXX
-  S X X         X  S
-    S S        XX S 
-         XXXXXXXX S 
-   S   S          SS
-     S S        S S 
- S   S    SS    S S 
-  SSS    S   S      
- S   S          SS  
- S S S  S  S  SS SS 
- S   S         S SS 
- SSSSS     S   S  S 
- SS SS  S      SSSS 
-      S    S   S  SS
-             S      
+  S X X X       X  S
+    S S X      XX S 
+XXXXXXXXWXXXXXXXXXXX
+   S   SX       X SS
+     S SX       X S 
+ S   S  X SS    X S 
+        XS   S  X   
+ S   S  XSSSSS XXS  
+ S   S  X  S  SX SS 
+ S S S  X  S   X SS 
+ S   S  X  S   X  S 
+ S   S  XSSSSS XSSS 
+      S X  S   X  SS
+        X    S X    
